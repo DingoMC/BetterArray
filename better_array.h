@@ -1,7 +1,6 @@
 #ifndef BETTER_ARRAY_H
 #define BETTER_ARRAY_H
 #include <iostream>
-#include <memory>
 #include <stdexcept>
 #include <vector>
 #include <list>
@@ -79,6 +78,12 @@ class Array {
             this->S++;
             this->A.push_back(Elem);
         }
+        void append (Array <T> arr) {
+            for (unsigned i = 0; i < arr.size(); i++) {
+                this->S++;
+                this->A.push_back(arr[i]);
+            }
+        }
         void pop () {
             if (this->S > 0) {
                 this->S--;
@@ -88,6 +93,12 @@ class Array {
         void insert (int Where, T Elem) {
             this->S++;
             this->A.insert(this->A.begin() + correctIndex(Where), Elem);
+        }
+        void insert (int Where, Array<T> arr) {
+            for (int i = 0; i < arr.size(); i++) {
+                this->S++;
+                this->A.insert(this->A.begin() + correctIndex(Where) + i, arr[i]);
+            }
         }
         void erase (int Which) {
             if (this->S > 0) {

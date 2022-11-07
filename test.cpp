@@ -4,6 +4,7 @@ using namespace std;
 int main () {
     Array < int > A;
     for (int i = 0; i < 5; i++) A.append(i);
+    vector < int > v1 = {1, 2, 5};
     A.show();
     A.pop();
     A.show();
@@ -14,6 +15,10 @@ int main () {
     A.erase(3);
     A.show();
     A.erase(-2);
+    A.show();
+    A.append(Array(v1));
+    A.show();
+    A.insert(1, Array(v1));
     A.show();
     cin.ignore();
     cin.get();
