@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "array": "cpp",
+        "vector": "cpp",
+        "list": "cpp",
+        "stdexcept": "cpp"
+    }
+}
