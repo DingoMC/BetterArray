@@ -106,7 +106,17 @@ class Array {
                 this->S--;
             }
         }
+        void erase (int From, int To) {
+            int width = correctIndex(To) - correctIndex(From) + 1;
+            if ((int) this->S >= width && width > 0) {
+                for (int i = 0; i < width; i++) {
+                    this->A.erase(this->A.begin() + correctIndex(From));
+                    this->S--;
+                }
+            } 
+        }
         // OPERATORS
         T& operator[] (int index) {return this->A[correctIndex(index)];}
+        
 };
 #endif // !BETTER_ARRAY_H

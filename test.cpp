@@ -20,6 +20,8 @@ int main () {
     A.show();
     A.insert(1, Array(v1));
     A.show();
+    A.erase(1, 3);
+    A.show();
     cin.ignore();
     cin.get();
     return 0;
