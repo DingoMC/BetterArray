@@ -1,3 +1,14 @@
+/**
+ * @file better_array.h
+ * @author DingoMC (www.dingomc.net)
+ * @brief Better Arrays for C++. Manage array calculations in more modern and convenient way.
+ * @version 0.1
+ * @date 2022-11-11
+ * 
+ * @copyright Copyright (c) DingoMC Systems 2022
+ * @warning Library written and tested on C++11. Using older C++ Version may cause malfunction!
+ * @note Full documentation https://github.com/DingoMC/BetterArray/README.md
+ */
 #ifndef BETTER_ARRAY_H
 #define BETTER_ARRAY_H
 #include <iostream>
@@ -7,35 +18,7 @@
 #define MAX_S(a, b) a > b ? a : b
 using namespace std;
 template <class T> class Array;
-class ArrayMask {
-    public:
-        vector < bool > M;
-        unsigned S;
-        bool operator[] (int index) const {return M.at(index);}
-        ArrayMask () { this->S = 0;}
-        ArrayMask (unsigned s) {
-            this->S = s;
-            this->M.resize(this->S);
-        }
-        ArrayMask (const vector < bool > &STL_Vector) {
-            this->S = STL_Vector.size();
-            this->M.resize(this->S);
-            for (unsigned i = 0; i < this->S; i++) this->M[i] = STL_Vector[i];
-        }
-        ArrayMask (const list < bool > &STL_list) {
-            this->S = STL_list.size();
-            for (auto it = STL_list.cbegin(); it != STL_list.cend(); it++) this->M.push_back(*it);
-        }
-        ArrayMask (const bool* dynamicArray, unsigned arraySize) {
-            this->S = arraySize;
-            this->M.resize(this->S);
-            for (unsigned i = 0; i < this->S; i++) this->M[i] = dynamicArray[i];
-        }
-        void append (bool MaskElem) {
-            this->S++;
-            this->M.push_back(MaskElem);
-        }
-};
+typedef Array<bool> ArrayMask;
 template <class T>
 class Array {
     private:
@@ -100,6 +83,7 @@ class Array {
          * @return unsigned Size
          */
         unsigned size () {return this->S;}
+        unsigned size () const {return S;}
         /**
          * @brief Show Array
          * @param showType Default to false: If true - it additionally shows type
@@ -185,6 +169,14 @@ class Array {
             } 
         }
         /**
+         * @brief Reverse elements in Array
+         */
+        void reverse () {
+            for (unsigned i = 0; i < this->S / 2; i++) {
+                swap(this->A[i], this->A[this->S - i - 1]);
+            }
+        }
+        /**
          * @brief Mask Array values using boolean mask
          * @param Mask vector<bool> type mask
          * @return Array<T> Masked Array
@@ -192,13 +184,18 @@ class Array {
         Array<T> masked (const ArrayMask &Mask) {
             Array<T> X;
             for (unsigned i = 0; i < this->S; i++) {
-                if (i >= Mask.S) X.append(this->A[i]);
+                if (i >= Mask.size()) X.append(this->A[i]);
                 else {
                     if (Mask[i]) X.append(this->A[i]);
                 }
             }
             return X;
         }
+        /**
+         * @brief Mask Array values using using custom comparator function
+         * @param custom_comparator Comparator function. Must return bool, must have one argument (which is considered as array element)
+         * @return Array<T> Masked Array
+         */
         Array<T> masked (bool (*custom_comparator)(T)) {
             Array<T> X;
             for (unsigned i = 0; i < this->S; i++) {
@@ -416,6 +413,71 @@ class Array {
                 else X.append(this->A[i] != Arr[i]);
             }
             return X;
+        }
+        // Boolean operators for Array Masks (Keeping inital ArrayMasks)
+        ArrayMask operator! () const {
+            ArrayMask X;
+            for (unsigned i = 0; i < this->S; i++) X.append(!this->A[i]);
+            return X;
+        }
+        ArrayMask operator| (const ArrayMask &Mask) const {
+            unsigned max_size = MAX_S(this->S, Mask.S);
+            ArrayMask X(max_size);
+            for (unsigned i = 0; i < max_size; i++) X.A[i] = false;
+            for (unsigned i = 0; i < this->S; i++) X.A[i] = (bool) X.A[i] | (bool) A[i];
+            for (unsigned i = 0; i < Mask.S; i++) X.A[i] = (bool) X.A[i] | (bool) Mask.A[i];
+            return X;
+        }
+        ArrayMask operator& (const ArrayMask &Mask) const {
+            unsigned max_size = MAX_S(this->S, Mask.S);
+            ArrayMask X(max_size);
+            for (unsigned i = 0; i < max_size; i++) X.A[i] = false;
+            for (unsigned i = 0; i < this->S; i++) X.A[i] = (bool) X.A[i] & (bool) A[i];
+            for (unsigned i = 0; i < Mask.S; i++) X.A[i] = (bool) X.A[i] & (bool) Mask.A[i];
+            return X;
+        }
+        ArrayMask operator^ (const ArrayMask &Mask) const {
+            unsigned max_size = MAX_S(this->S, Mask.S);
+            ArrayMask X(max_size);
+            for (unsigned i = 0; i < max_size; i++) X.A[i] = false;
+            for (unsigned i = 0; i < this->S; i++) X.A[i] = (bool) X.A[i] ^ (bool) A[i];
+            for (unsigned i = 0; i < Mask.S; i++) X.A[i] = (bool) X.A[i] ^ (bool) Mask.A[i];
+            return X;
+        }
+        // Boolean operators for Array Masks (with constants, keeping initial ArrayMask) 
+        ArrayMask operator| (bool Boolean) const {
+            ArrayMask X(this->S);
+            for (unsigned i = 0; i < this->S; i++) X.A[i] = (bool) A[i] | Boolean;
+            return X;
+        }
+        ArrayMask operator& (bool Boolean) const {
+            ArrayMask X(this->S);
+            for (unsigned i = 0; i < this->S; i++) X.A[i] = (bool) A[i] & Boolean;
+            return X;
+        }
+        ArrayMask operator^ (bool Boolean) const {
+            ArrayMask X(this->S);
+            for (unsigned i = 0; i < this->S; i++) X.A[i] = (bool) A[i] ^ Boolean;
+            return X;
+        }
+        // Boolean operators for Array Masks (modifying result ArrayMask)
+        ArrayMask operator|= (const ArrayMask &Mask) {
+            unsigned max_size = MAX_S(this->S, Mask.S);
+            for (unsigned i = this->S; i < max_size; i++) append(false);
+            for (unsigned i = 0; i < Mask.S; i++) this->A[i] = (bool) A[i] | (bool) Mask.A[i];
+            return ArrayMask(this->A);
+        }
+        ArrayMask operator&= (const ArrayMask &Mask) {
+            unsigned max_size = MAX_S(this->S, Mask.S);
+            for (unsigned i = this->S; i < max_size; i++) append(false);
+            for (unsigned i = 0; i < Mask.S; i++) this->A[i] = (bool) A[i] & (bool) Mask.A[i];
+            return ArrayMask(this->A);
+        }
+        ArrayMask operator^= (const ArrayMask &Mask) {
+            unsigned max_size = MAX_S(this->S, Mask.S);
+            for (unsigned i = this->S; i < max_size; i++) append(false);
+            for (unsigned i = 0; i < Mask.S; i++) this->A[i] = (bool) A[i] ^ (bool) Mask.A[i];
+            return ArrayMask(this->A);
         }
 };
 #endif // !BETTER_ARRAY_H

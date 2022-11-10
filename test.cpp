@@ -1,4 +1,6 @@
 #include <iostream>
+#include <vector>
+#include <list>
 #include "better_array.h"
 using namespace std;
 bool CustomMask (int Array_Elem) {
@@ -11,8 +13,8 @@ int main () {
     for (int i = 5; i < 10; i++) B.append(i);
     vector < int > v1 = {1, 2, 5};
     A.pop();
-    A.insert(1, 1);
-    A.insert(-2, 2);
+    A.insert(1, 5);
+    A.insert(-2, 4);
     A.erase(1);
     A.erase(-1);
     A.append(Array<int>(v1));
@@ -40,6 +42,25 @@ int main () {
     A.masked(A == B).show();
     cout<<"Array A Masked with custom mask A < 2 or A > 6 (does not modify A): ";
     A.masked(CustomMask).show();
+    A.reverse();
+    cout<<"Reverse A: ";
+    A.show();
+    ArrayMask Mask1(A == B);
+    ArrayMask Mask2(A < B);
+    cout<<"A == B Mask: ";
+    Mask1.show();
+    cout<<"!(A == B) Mask (A != B): ";
+    (!Mask1).show();
+    cout<<"A < B Mask: ";
+    Mask2.show();
+    cout<<"A < B | A == B Mask: ";
+    (Mask1 | Mask2).show();
+    cout<<"A < B & A == B Mask: ";
+    (Mask1 & Mask2).show();
+    cout<<"A < B ^ A == B Mask: ";
+    (Mask1 ^ Mask2).show();
+    cout<<"(A == B) ^ 1 Mask: ";
+    (Mask1 ^ true).show();
     cin.ignore();
     cin.get();
     return 0;
