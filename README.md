@@ -25,7 +25,12 @@
         - [Boolean operations on Array Masks](#263-boolean-operations-on-array-masks)
         - [Boolean operations on Array Mask and constant](#264-boolean-operations-on-array-mask-and-constant)
         - [Boolean operations modifying Array Mask](#265-boolean-operations-modifying-array-mask)
-3. [Changelog](#3-changelog)
+3. [Container Namespace](#3-container-namespace)
+    1) [Show Containers](#31-show-containers)
+4. [Converter Namespace](#4-converter-namespace)
+    1) [Convert Array to other containers](#41-convert-array-to-other-containers)
+5. [Changelog](#5-changelog)
+    - [Release-0.2](#release-02)
     - [Release-0.1](#release-01)
 
 ## 1. Overview
@@ -45,8 +50,9 @@ Any suggestions to improve this library can be sent via [E-mail](https://www.din
 ### 1.3. Other
 
 File: better_array.h  
-Latest Version: [0.1](#release-01)  
-Date: 11th Nov 2022  
+Latest Version: [0.2](#release-02)  
+Created on: 11th Nov 2022  
+Latest Update: 12th Nov 2022  
 Testing File: test.cpp  
 G++ Additional Compiler Flags: `-static-libstdc++`, `-std=c++17`
 
@@ -116,6 +122,19 @@ G++ Additional Compiler Flags: `-static-libstdc++`, `-std=c++17`
     int *T = new int[5];
     for (int i = 0; i < 5; i++) T[i] = i;
     Array<int> A(T, 5);
+    ```
+
+- Create Array using STL Set `v.0.2+`
+
+    ```c++
+    Array<T>::Array(const std::set<T> &STL_Set)
+    ```  
+
+    Example:  
+
+    ```c++
+    std::set<int> S = {1, 2, 3};
+    Array<int> A(S);
     ```
 
 ### 2.2. Array Indexing
@@ -495,9 +514,88 @@ Mask2 &= Mask1; // Mask2 = [0, 0, 1, 1, 0]
 Mask2 ^= Mask1; // Mask2 = [0, 0, 0, 0, 0]
 ```
 
-## 3. Changelog
+## 3. Container Namespace
+
+### 3.1. Show containers
+
+`v.0.2+`  
+
+Function `show` can display various containers along with their type and even nested containers.
+
+Function parameters:  
+First parameter is **always** a container. Can be dynamic array, Array Class object or STL Container.
+
+> **Important**: For dynamic arrays next parameters should be their sizes.
+
+Second parameter is optional boolean `showType` by default set to false. If set manually to true it will display container type before printing its contents.
+
+Typical Examples:
+
+```c++
+int* D = new int[4];
+for (int i = 0; i < 4; i++) D[i] = i;
+Container::show(D, 4); // Will print [0, 1, 2, 3]
+Container::show(D, 4, true); // Will print `DynArray` [0, 1, 2, 3]
+int **D2 = new int*[2];
+for (int i = 0; i < 2; i++) D2[i] = new int[2];
+for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++) D2[i][j] = i+j;
+Container::show(D2, 2, 2); // Will print [[0, 1], [1, 2]]
+std::vector<int> V = {0, 1, 2, 3};
+Container::show(V, true); // Will print `Vector` [0, 1, 2, 3]
+std::list<int> L = {0, 1, 2, 3};
+Container::show(L, true); // Will print `List` [0, 1, 2, 3]
+std::set<int> S = {0, 1, 2, 3};
+Container::show(S, true); // Will print `Set` {0, 1, 2, 3}
+std::map <char, int> M;
+for (int i = 0; i < 3; i++) M.insert(make_pair((char) (i + 65), i));
+Container::show(M, true); // Will print `Map` {A: 0, B: 1, C: 2}
+Array<int> A(V);
+Container::show(A, true); // Will print `Array` [0, 1, 2, 3]
+```
+
+## 4. Converter Namespace
+
+### 4.1. Convert Array to other containers
+
+`v.0.2+`
+
+Converter Namespace provides functions that can convert Array class object to: Vector, List, Set or Dynamic Array.
+> Note: While converting to dynamic array, its size is passed by reference as second function parameter.  
+Conversion to set will remove duplicates and order the array.
+
+Two Arrays can be used as keys and values to create a map.
+> **Important!**: Conversion to map requires Key and Value Array to have **the same size**  
+
+Examples:
+
+```c++
+std::vector<int> Init = {1, 2, 3, 4};
+std::vector<int> Init2 = {'A', 'B', 'C', 'D'};
+Array<int> A(Init);
+// Conversion to STL List
+std::list<int> = Converter::toList(A);
+// Conversion to STL Set
+std::set<int> = Converter::toSet(A);
+// Conversion to STL Vector
+std::vector<int> = Converter::toVector(A);
+int* DynArr;
+int DynArr_size;
+// Conversion to dynamic Array
+DynArr = Converter::toDynArray(A, DynArr_size);
+Array<int> Keys(Init2);
+// Conversion to STL Map: {A: 1, B: 2, C: 3, D: 4}
+std::map<char, int> = Converter::toMap(Keys, A);
+```
+
+## 5. Changelog
+
+### Release-0.2
+
+Added new constructor, that creates Array object using STL Set.  
+Added [Container namespace](#3-container-namespace) with `show` functions to display various containers.  
+Added [Converter namespace](#4-converter-namespace), which contains functions that can convert Array object to other containers.
 
 ### Release-0.1
 
-Created class Array with all necessary methods and operators.  
+Created [class Array](#2-class-array) with all necessary methods and operators.  
 This is the first release.

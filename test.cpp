@@ -61,6 +61,15 @@ int main () {
     (Mask1 ^ Mask2).show();
     cout<<"(A == B) ^ 1 Mask: ";
     (Mask1 ^ true).show();
+    int* DynArr;
+    int DynArr_size;
+    DynArr = Converter::toDynArray(A, DynArr_size);
+    Container::show(DynArr, DynArr_size, true);
+    Container::show(Converter::toVector(A), true);
+    Container::show(Converter::toList(A), true);
+    Container::show(Converter::toSet(A), true);
+    vector<char> keys = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
+    Container::show(Converter::toMap(Array<char>(keys), A), true);
     cin.ignore();
     cin.get();
     return 0;

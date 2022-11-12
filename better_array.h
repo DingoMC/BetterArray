@@ -15,10 +15,100 @@
 #include <stdexcept>
 #include <vector>
 #include <list>
+#include <set>
+#include <map>
 #define MAX_S(a, b) a > b ? a : b
 using namespace std;
 template <class T> class Array;
 typedef Array<bool> ArrayMask;
+namespace Container {
+    // Printing Functions
+    template<class T> void show(T Elem, bool = false, bool = false);
+    template<class T> void show(T* Array, int, bool showType = false, bool = false);
+    template<class T> void show(T** Array, int, int, bool showType = false, bool = false);
+    template<class T> void show(const Array < T > &Arr, bool showType = false, bool = false);
+    template<class T> void show(const vector < T > &STL_Vec, bool showType = false, bool = false);
+    template<class T> void show(const list < T > &STL_List, bool showType = false, bool = false);
+    template<class T> void show(const set < T > &STL_Set, bool showType = false, bool = false);
+    template<class T, class U> void show(const map<T, U> &Map, bool showType = false, bool = false);
+    template <class T> void show (T Elem, bool showType, bool fromRecursion) {cout<<Elem;}
+    template <class T> void show (T* Array, int arraySize, bool showType, bool fromRecursion) {
+        if (arraySize < 0) throw std::invalid_argument("arraySize must be a positive integer!");
+        if (showType) cout<<"`DynArray` ";
+        cout<<"[";
+        for (unsigned i = 0; i < arraySize; i++) {
+            show(Array[i], showType, true);
+            if (i < arraySize - 1) cout<<", ";
+        }
+        cout<<"]";
+        if (!fromRecursion) cout<<endl;
+    }
+    template<class T> void show (T** Array, int arraySize1, int arraySize2, bool showType, bool fromRecursion) {
+        if (arraySize1 < 0 || arraySize2 < 0) throw std::invalid_argument("arraySize must be a positive integer!");
+        if (showType) cout<<"`DynArray` ";
+        cout<<"[";
+        for (unsigned i = 0; i < arraySize1; i++) {
+            show(Array[i], arraySize2, showType, true);
+            if (i < arraySize1 - 1) cout<<", ";
+        }
+        cout<<"]";
+        if (!fromRecursion) cout<<endl;
+    }
+    template<class T> void show (const Array < T > &Arr, bool showType, bool fromRecursion) {
+        unsigned A_size = Arr.size();
+        if (showType) cout<<"`Array` ";
+        cout<<"[";
+        for (unsigned i = 0; i < A_size; i++) {
+            show(Arr[i], showType, true);
+            if (i < A_size - 1) cout<<", ";
+        }
+        cout<<"]";
+        if (!fromRecursion) cout<<endl;
+    }
+    template<class T> void show (const vector < T > &STL_Vec, bool showType, bool fromRecursion) {
+        unsigned V_size = STL_Vec.size();
+        if (showType) cout<<"`Vector` ";
+        cout<<"[";
+        for (unsigned i = 0; i < V_size; i++) {
+            show(STL_Vec[i], showType, true);
+            if (i < V_size - 1) cout<<", ";
+        }
+        cout<<"]";
+        if (!fromRecursion) cout<<endl;
+    }
+    template<class T> void show (const list < T > &STL_List, bool showType, bool fromRecursion) {
+        if (showType) cout<<"`List` ";
+        cout<<"[";
+        for (auto it = STL_List.cbegin(); it != STL_List.cend(); it++) {
+            if (it != STL_List.cbegin()) cout<<", ";
+            show(*it, showType, true);
+        }
+        cout<<"]";
+        if (!fromRecursion) cout<<endl;
+    }
+    template<class T> void show (const set < T > &STL_Set, bool showType, bool fromRecursion) {
+        if (showType) cout<<"`Set` ";
+        cout<<"{";
+        for (auto it = STL_Set.cbegin(); it != STL_Set.cend(); it++) {
+            if (it != STL_Set.cbegin()) cout<<", ";
+            show(*it, showType, true);
+        }
+        cout<<"}";
+        if (!fromRecursion) cout<<endl;
+    }
+    template<class T, class U> void show(const map<T, U> &Map, bool showType, bool fromRecursion) {
+        if (showType) cout<<"`Map` ";
+        cout<<"{";
+        for (typename map<T, U>::const_iterator it = Map.begin(); it != Map.end(); ++it) {
+            if (it != Map.cbegin()) cout<<", ";
+            show(it->first, showType, true);
+            cout<<": ";
+            show(it->second, showType, true);
+        }
+        cout<<"}";
+        if (!fromRecursion) cout<<endl;
+    }
+}
 template <class T>
 class Array {
     private:
@@ -60,11 +150,11 @@ class Array {
         /**
          * @brief Construct a new Array object using List
          * 
-         * @param STL_list Initializing List
+         * @param STL_List Initializing List
          */
-        Array (const list < T > &STL_list) {
-            this->S = STL_list.size();
-            for (auto it = STL_list.cbegin(); it != STL_list.cend(); it++) this->A.push_back(*it);
+        Array (const list < T > &STL_List) {
+            this->S = STL_List.size();
+            for (auto it = STL_List.cbegin(); it != STL_List.cend(); it++) this->A.push_back(*it);
         }
         /**
          * @brief Construct a new Array object using dynamic Array
@@ -76,6 +166,15 @@ class Array {
             this->S = arraySize;
             this->A.resize(this->S);
             for (unsigned i = 0; i < this->S; i++) this->A[i] = dynamicArray[i];
+        }
+        /**
+         * @brief Construct a new Array object using Set
+         * 
+         * @param STL_Set Initializing Set
+         */
+        Array (const set < T > &STL_Set) {
+            this->S = STL_Set.size();
+            for (auto it = STL_Set.cbegin(); it != STL_Set.cend(); it++) this->A.push_back(*it);
         }
         // FUNCTIONS
         /**
@@ -89,19 +188,13 @@ class Array {
          * @param showType Default to false: If true - it additionally shows type
          */
         void show (bool showType = false) {
-            if (showType) cout<<"`Array` ";
-            cout<<"[";
-            for (unsigned i = 0; i < this->S; i++) {
-                cout<<this->A[i];
-                if (i < this->S - 1) cout<<", ";
-            }
-            cout<<"]"<<endl;
+            Container::show(Array<T>(this->A), showType);
         }
         /**
          * @brief Add element to the end of an Array
          * @param Elem 
          */
-        void append (T Elem) {
+        void append (const T& Elem) {
             this->S++;
             this->A.push_back(Elem);
         }
@@ -209,32 +302,33 @@ class Array {
         // Non-accessible and accessible subscripts
         T& operator[] (int index) {return A[correctIndex(index)];}
         T operator[] (int index) const {return A.at(correctIndex(index));}
+
         // Arithmetic operations with constants (keeping the Array)
-        Array<T> operator+ (T Num) const {
+        Array<T> operator+ (const T& Num) const {
             Array <T> X(this->S);
             for (unsigned i = 0; i < this->S; i++) X[i] = 0;
             for (unsigned i = 0; i < this->S; i++) X[i] += this->A[i] + Num;
             return X;
         }
-        Array<T> operator- (T Num) const {
+        Array<T> operator- (const T& Num) const {
             Array <T> X(this->S);
             for (unsigned i = 0; i < this->S; i++) X[i] = 0;
             for (unsigned i = 0; i < this->S; i++) X[i] += this->A[i] - Num;
             return X;
         }
-        Array<T> operator* (T Num) const {
+        Array<T> operator* (const T& Num) const {
             Array <T> X(this->S);
             for (unsigned i = 0; i < this->S; i++) X[i] = 0;
             for (unsigned i = 0; i < this->S; i++) X[i] += (this->A[i] * Num);
             return X;
         }
-        Array<T> operator/ (T Num) const {
+        Array<T> operator/ (const T& Num) const {
             Array <T> X(this->S);
             for (unsigned i = 0; i < this->S; i++) X[i] = 0;
             for (unsigned i = 0; i < this->S; i++) X[i] += (this->A[i] / Num);
             return X;
         }
-        Array<T> operator% (T Num) const {
+        Array<T> operator% (const T& Num) const {
             Array <T> X(this->S);
             for (unsigned i = 0; i < this->S; i++) X[i] = 0;
             for (unsigned i = 0; i < this->S; i++) X[i] += (this->A[i] % Num);
@@ -282,23 +376,23 @@ class Array {
             return X;
         }
         // Arithmetic operations with constants (modifying the Array)
-        Array<T> operator+= (T Num) {
+        Array<T> operator+= (const T& Num) {
             for (unsigned i = 0; i < this->S; i++) this->A[i] += Num;
             return Array<T>(this->A);
         }
-        Array<T> operator-= (T Num) {
+        Array<T> operator-= (const T& Num) {
             for (unsigned i = 0; i < this->S; i++) this->A[i] -= Num;
             return Array<T>(this->A);
         }
-        Array<T> operator*= (T Num) {
+        Array<T> operator*= (const T& Num) {
             for (unsigned i = 0; i < this->S; i++) this->A[i] *= Num;
             return Array<T>(this->A);
         }
-        Array<T> operator/= (T Num) {
+        Array<T> operator/= (const T& Num) {
             for (unsigned i = 0; i < this->S; i++) this->A[i] /= Num;
             return Array<T>(this->A);
         }
-        Array<T> operator%= (T Num) {
+        Array<T> operator%= (const T& Num) {
             for (unsigned i = 0; i < this->S; i++) this->A[i] %= Num;
             return Array<T>(this->A);
         }
@@ -329,32 +423,32 @@ class Array {
             return Array<T>(this->A);
         }
         // Array Masking with comparison operators (comparing to constant)
-        ArrayMask operator== (T Value_1) {
+        ArrayMask operator== (const T& Value_1) {
             ArrayMask X;
             for (unsigned i = 0; i < this->S; i++) X.append(this->A[i] == Value_1);
             return X;
         }
-        ArrayMask operator>= (T Value_1) {
+        ArrayMask operator>= (const T& Value_1) {
             ArrayMask X;
             for (unsigned i = 0; i < this->S; i++) X.append(this->A[i] >= Value_1);
             return X;
         }
-        ArrayMask operator<= (T Value_1) {
+        ArrayMask operator<= (const T& Value_1) {
             ArrayMask X;
             for (unsigned i = 0; i < this->S; i++) X.append(this->A[i] <= Value_1);
             return X;
         }
-        ArrayMask operator> (T Value_1) {
+        ArrayMask operator> (const T& Value_1) {
             ArrayMask X;
             for (unsigned i = 0; i < this->S; i++) X.append(this->A[i] > Value_1);
             return X;
         }
-        ArrayMask operator< (T Value_1) {
+        ArrayMask operator< (const T& Value_1) {
             ArrayMask X;
             for (unsigned i = 0; i < this->S; i++) X.append(this->A[i] < Value_1);
             return X;
         }
-        ArrayMask operator!= (T Value_1) {
+        ArrayMask operator!= (const T& Value_1) {
             ArrayMask X;
             for (unsigned i = 0; i < this->S; i++) X.append(this->A[i] != Value_1);
             return X;
@@ -480,4 +574,38 @@ class Array {
             return ArrayMask(this->A);
         }
 };
+namespace Converter {
+    template <class T>
+    T* toDynArray (const Array<T> &Arr, int &new_size) {
+        new_size = (int) Arr.size();
+        T* NewContainer = new T[new_size];
+        for (unsigned i = 0; i < Arr.size(); i++) NewContainer[i] = Arr[i];
+        return NewContainer;
+    }
+    template <class T>
+    vector<T> toVector (const Array<T> &Arr) {
+        vector<T> NewContainer;
+        for (unsigned i = 0; i < Arr.size(); i++) NewContainer.push_back(Arr[i]);
+        return NewContainer;
+    }
+    template <class T>
+    list<T> toList (const Array<T> &Arr) {
+        list<T> NewContainer;
+        for (unsigned i = 0; i < Arr.size(); i++) NewContainer.push_back(Arr[i]);
+        return NewContainer;
+    }
+    template <class T>
+    set<T> toSet (const Array<T> &Arr) {
+        set<T> NewContainer;
+        for (unsigned i = 0; i < Arr.size(); i++) NewContainer.insert(Arr[i]);
+        return NewContainer;
+    }
+    template <class T, class U>
+    map<T, U> toMap (const Array<T> &Keys, const Array<U> &Values) {
+        if (Keys.size() != Values.size()) throw std::invalid_argument("Keys and Values length must be the same!");
+        map<T, U> NewContainer;
+        for (unsigned i = 0; i < Keys.size(); i++) NewContainer.insert(make_pair(Keys[i], Values[i]));
+        return NewContainer;
+    }
+}
 #endif // !BETTER_ARRAY_H
