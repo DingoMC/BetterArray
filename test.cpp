@@ -6,6 +6,9 @@ using namespace std;
 bool CustomMask (int Array_Elem) {
     return Array_Elem < 2 || Array_Elem > 6;
 }
+bool CustomComp (int V1, int V2) {
+    return V1 + V2 > 5;
+}
 int main () {
     Array < int > A;
     Array < int > B;
@@ -70,6 +73,20 @@ int main () {
     Container::show(Converter::toSet(A), true);
     vector<char> keys = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
     Container::show(Converter::toMap(Array<char>(keys), A), true);
+    cout<<A.max()<<endl;
+    cout<<A.min()<<endl;
+    cout<<A.mean()<<endl;
+    cout<<A.max(-3, -1)<<endl;
+    cout<<A.min(-3, -1)<<endl;
+    cout<<A.mean(1, -2)<<endl;
+    cout<<"Array slice: ";
+    A.slice(1, -2).show();
+    A.sort(Order::DESC, 2, -3);
+    cout<<"Partially sorted Array: ";
+    A.show();
+    A.sort(CustomComp);
+    cout<<"Fully sorted Array using custom comparison: ";
+    A.show();
     cin.ignore();
     cin.get();
     return 0;

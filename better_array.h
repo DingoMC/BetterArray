@@ -2,8 +2,8 @@
  * @file better_array.h
  * @author DingoMC (www.dingomc.net)
  * @brief Better Arrays for C++. Manage array calculations in more modern and convenient way.
- * @version 0.1
- * @date 2022-11-11
+ * @version 0.3
+ * @date 2022-11-13
  * 
  * @copyright Copyright (c) DingoMC Systems 2022
  * @warning Library written and tested on C++11. Using older C++ Version may cause malfunction!
@@ -17,10 +17,14 @@
 #include <list>
 #include <set>
 #include <map>
+#pragma GCC optimize("O3")
 #define MAX_S(a, b) a > b ? a : b
+#define ArrayBegin 0
+#define ArrayEnd 2147483647
 using namespace std;
 template <class T> class Array;
 typedef Array<bool> ArrayMask;
+enum Order {ASC = 1, DESC = -1};
 namespace Container {
     // Printing Functions
     template<class T> void show(T Elem, bool = false, bool = false);
@@ -114,10 +118,15 @@ class Array {
     private:
         vector < T > A;
         unsigned S;
-        int correctIndex (int index) const {
+        int Idx (int index) const {
             if (index < -(int) (this->S) || index >= (int) this->S) throw std::invalid_argument("Invalid Array Index!");
             if (index >= 0) return index;
             return index + (int) this->S;
+        }
+        void CheckRange (int From, int To) {
+            int width = Idx(To) - Idx(From) + 1;
+            if (width < 1 || width > (int) this->S) throw std::invalid_argument("Invalid From-To Range");
+            return;
         }
     public:
         // CONSTRUCTORS
@@ -224,7 +233,7 @@ class Array {
          */
         void insert (int Where, T Elem) {
             this->S++;
-            this->A.insert(this->A.begin() + correctIndex(Where), Elem);
+            this->A.insert(this->A.begin() + Idx(Where), Elem);
         }
         /**
          * @brief Insert another Array begging from n-th index to Array
@@ -234,7 +243,7 @@ class Array {
         void insert (int Where, Array<T> arr) {
             for (int i = 0; i < arr.size(); i++) {
                 this->S++;
-                this->A.insert(this->A.begin() + correctIndex(Where) + i, arr[i]);
+                this->A.insert(this->A.begin() + Idx(Where) + i, arr[i]);
             }
         }
         /**
@@ -243,23 +252,22 @@ class Array {
          */
         void erase (int Which) {
             if (this->S > 0) {
-                this->A.erase(this->A.begin() + correctIndex(Which));
+                this->A.erase(this->A.begin() + Idx(Which));
                 this->S--;
             }
         }
         /**
-         * @brief Remove elements begging from i-th index to j-th index
+         * @brief Remove elements begging from i-th index to j-th index (both inclusive)
          * @param From i-th index (negative index supported)
          * @param To j-th index (negative index supported, j >= i)
          */
         void erase (int From, int To) {
-            int width = correctIndex(To) - correctIndex(From) + 1;
-            if ((int) this->S >= width && width > 0) {
-                for (int i = 0; i < width; i++) {
-                    this->A.erase(this->A.begin() + correctIndex(From));
-                    this->S--;
-                }
-            } 
+            CheckRange(From, To);
+            int width = Idx(To) - Idx(From) + 1;
+            for (int i = 0; i < width; i++) {
+                this->A.erase(this->A.begin() + Idx(From));
+                this->S--;
+            }
         }
         /**
          * @brief Reverse elements in Array
@@ -296,12 +304,105 @@ class Array {
             }
             return X;
         }
+        /**
+         * @brief Get maximum value of Array
+         * @param From Starting Index (Inclusive). Default to 0
+         * @param To End Index (Inclusive). Default to Array End
+         * @return T MAX
+         */
+        T max (int From = ArrayBegin, int To = ArrayEnd) {
+            if (To == ArrayEnd && (int) this->S < ArrayEnd) To = this->S - 1;
+            CheckRange(From, To);
+            T M = this->A[Idx(From)];
+            for (unsigned i = Idx(From) + 1; i <= Idx(To); i++) if (this->A[i] > M) M = this->A[i];
+            return M;
+        }
+        /**
+         * @brief Get minimum value of Array
+         * @param From Starting Index (Inclusive). Default to 0
+         * @param To End Index (Inclusive). Default to Array End
+         * @return T MIN
+         */
+        T min (int From = ArrayBegin, int To = ArrayEnd) {
+            if (To == ArrayEnd && (int) this->S < ArrayEnd) To = this->S - 1;
+            CheckRange(From, To);
+            T M = this->A[Idx(From)];
+            for (unsigned i = Idx(From) + 1; i <= Idx(To); i++) if (this->A[i] < M) M = this->A[i];
+            return M;
+        }
+        /**
+         * @brief Get average of Array
+         * @param From Starting Index (Inclusive). Default to 0
+         * @param To End Index (Inclusive). Default to Array End
+         * @return double Average
+         */
+        double mean (int From = ArrayBegin, int To = ArrayEnd) {
+            if (To == ArrayEnd && (int) this->S < ArrayEnd) To = this->S - 1;
+            CheckRange(From, To);
+            double M = 0.0;
+            int range = Idx(To) - Idx(From) + 1;
+            for (unsigned i = Idx(From); i <= Idx(To); i++) M += (double) this->A[i];
+            return M / (double) (range);
+        }
+        /**
+         * @brief Get Array Slice
+         * @param From Starting Index (Inclusive). Default to 0
+         * @param To End Index (Inclusive). Default to Array End
+         * @return Array<T> Array Slice
+         */
+        Array<T> slice (int From = ArrayBegin, int To = ArrayEnd) {
+            if (To == ArrayEnd && (int) this->S < ArrayEnd) To = this->S - 1;
+            CheckRange(From, To);
+            Array<T> X;
+            for (unsigned i = Idx(From); i <= Idx(To); i++) X.append(this->A[i]);
+            return X;
+        }
+        /**
+         * @brief Sorts an Array
+         * @param SOrder ASCending = 1, DESCending = -1. Default ASC
+         * @param From Starting Index (Inclusive). Default to 0
+         * @param To End Index (Inclusive). Default to Array End
+         */
+        void sort (Order SOrder = ASC, int From = ArrayBegin, int To = ArrayEnd) {
+            if (To == ArrayEnd && (int) this->S < ArrayEnd) To = this->S - 1;
+            unsigned i_max = Idx(To) - Idx(From);
+            for (unsigned i = 0; i < i_max; i++) {
+                bool swapped = false;
+                for (unsigned j = Idx(From); j < Idx(To) - i; j++) {
+                    if ((SOrder == ASC && this->A[j] > this->A[j+1]) || (SOrder == DESC && this->A[j] < this->A[j+1])) {
+                        swap(this->A[j], this->A[j+1]);
+                        swapped = true;
+                    }
+                }
+                if (!swapped) break;
+            }
+        }
+        /**
+         * @brief Sorts an Array using custom comparison function
+         * @param sorting_comparator Comparator function. Must return bool, must have two arguments (which are first and second element in order)
+         * @param From Starting Index (Inclusive). Default to 0
+         * @param To End Index (Inclusive). Default to Array End
+         */
+        void sort (bool (*sorting_comparator)(T, T), int From = ArrayBegin, int To = ArrayEnd) {
+            if (To == ArrayEnd && (int) this->S < ArrayEnd) To = this->S - 1;
+            unsigned i_max = Idx(To) - Idx(From);
+            for (unsigned i = 0; i < i_max; i++) {
+                bool swapped = false;
+                for (unsigned j = Idx(From); j < Idx(To) - i; j++) {
+                    if (sorting_comparator(this->A[j], this->A[j+1])) {
+                        swap(this->A[j], this->A[j+1]);
+                        swapped = true;
+                    }
+                }
+                if (!swapped) break;
+            }
+        }
         /*
             OPERATORS OVERLOADING
         */
         // Non-accessible and accessible subscripts
-        T& operator[] (int index) {return A[correctIndex(index)];}
-        T operator[] (int index) const {return A.at(correctIndex(index));}
+        T& operator[] (int index) {return A[Idx(index)];}
+        T operator[] (int index) const {return A.at(Idx(index));}
 
         // Arithmetic operations with constants (keeping the Array)
         Array<T> operator+ (const T& Num) const {
@@ -575,6 +676,13 @@ class Array {
         }
 };
 namespace Converter {
+    /**
+     * @brief Convert Array to Dynamic Pointer Array
+     * @tparam T Any
+     * @param Arr Array object
+     * @param new_size Size returned by reference
+     * @return T* Dynamic Array
+     */
     template <class T>
     T* toDynArray (const Array<T> &Arr, int &new_size) {
         new_size = (int) Arr.size();
@@ -582,24 +690,50 @@ namespace Converter {
         for (unsigned i = 0; i < Arr.size(); i++) NewContainer[i] = Arr[i];
         return NewContainer;
     }
+    /**
+     * @brief Convert Array to STL Vector
+     * @tparam T Any
+     * @param Arr Array object
+     * @return vector<T> 
+     */
     template <class T>
     vector<T> toVector (const Array<T> &Arr) {
         vector<T> NewContainer;
         for (unsigned i = 0; i < Arr.size(); i++) NewContainer.push_back(Arr[i]);
         return NewContainer;
     }
+    /**
+     * @brief Convert Array to STL List
+     * @tparam T Any
+     * @param Arr Array object
+     * @return list<T> 
+     */
     template <class T>
     list<T> toList (const Array<T> &Arr) {
         list<T> NewContainer;
         for (unsigned i = 0; i < Arr.size(); i++) NewContainer.push_back(Arr[i]);
         return NewContainer;
     }
+    /**
+     * @brief Convert Array to STL Set
+     * @tparam T Any
+     * @param Arr Array object
+     * @return set<T> 
+     */
     template <class T>
     set<T> toSet (const Array<T> &Arr) {
         set<T> NewContainer;
         for (unsigned i = 0; i < Arr.size(); i++) NewContainer.insert(Arr[i]);
         return NewContainer;
     }
+    /**
+     * @brief Convert Array to STL Map
+     * @tparam T Any
+     * @tparam U Any
+     * @param Keys Array object - map keys
+     * @param Values Array object - map values
+     * @return map<T, U> 
+     */
     template <class T, class U>
     map<T, U> toMap (const Array<T> &Keys, const Array<U> &Values) {
         if (Keys.size() != Values.size()) throw std::invalid_argument("Keys and Values length must be the same!");

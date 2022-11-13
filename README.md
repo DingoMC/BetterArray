@@ -30,6 +30,7 @@
 4. [Converter Namespace](#4-converter-namespace)
     1) [Convert Array to other containers](#41-convert-array-to-other-containers)
 5. [Changelog](#5-changelog)
+    - [Release-0.3](#release-03)
     - [Release-0.2](#release-02)
     - [Release-0.1](#release-01)
 
@@ -50,9 +51,9 @@ Any suggestions to improve this library can be sent via [E-mail](https://www.din
 ### 1.3. Other
 
 File: better_array.h  
-Latest Version: [0.2](#release-02)  
+Latest Version: [0.3](#release-03)  
 Created on: 11th Nov 2022  
-Latest Update: 12th Nov 2022  
+Latest Update: 13th Nov 2022  
 Testing File: test.cpp  
 G++ Additional Compiler Flags: `-static-libstdc++`, `-std=c++17`
 
@@ -305,6 +306,131 @@ std::cout<<A[-2]<<std::endl; // Will print 0
     std::vector<int> V = {6, 9, 1, 0, 3};
     Array<int> A(V);
     A.reverse();    // A = [3, 0, 1, 9, 6]
+    ```
+
+- Get Maximum value from Array `v.0.3+`
+
+    ```c++
+    T Array<T>::max(int From = 0, int To = 2147483647)
+    ```  
+
+    Example:  
+
+    ```c++
+    std::vector<int> V = {6, 9, 1, 0, 3};
+    Array<int> A(V);
+    cout<<A.max()<<endl; // Will print 9
+    // Getting Max from range A[2] to A[4] (both inclusive)
+    cout<<A.max(2, -1)<<endl; // Will print 3
+    ```
+
+- Get Minimum value from Array `v.0.3+`
+
+    ```c++
+    T Array<T>::max(int From = 0, int To = 2147483647)
+    ```  
+
+    Example:  
+
+    ```c++
+    std::vector<int> V = {6, 9, 1, 0, 3};
+    Array<int> A(V);
+    cout<<A.min()<<endl; // Will print 0
+    // Getting Max from range A[0] to A[2] (both inclusive)
+    cout<<A.min(0, 2)<<endl; // Will print 1
+    ```
+
+- Get Arithmetic Average of Array `v.0.3+`
+
+    ```c++
+    double Array<T>::mean(int From = 0, int To = 2147483647)
+    ```  
+
+    Example:  
+
+    ```c++
+    std::vector<int> V = {6, 9, 1, 0, 4};
+    Array<int> A(V);
+    cout<<A.mean()<<endl; // Will print 4
+    // Getting Mean from range A[0] to A[3] (both inclusive)
+    cout<<A.mean(0, -2)<<endl; // Will print 4 = (6+9+1+0)/4
+    ```
+
+- Get Array Slice `v.0.3+`
+
+    ```c++
+    Array<T> Array<T>::slice(int From = 0, int To = 2147483647)
+    ```  
+
+    Example:  
+
+    ```c++
+    std::vector<int> V = {6, 9, 1, 0, 4};
+    Array<int> A(V);
+    A.slice().show(); // No parameters will print whole Array
+    A.slice(1, -2).show(); // Will print [9, 1, 0]
+    ```
+
+- Sort an Array `v.0.3+`
+
+    ```c++
+    void Array<T>::sort(Order SOrder = ASC, int From = 0, int To = 2147483647)
+    ```  
+
+    Example:  
+
+    ```c++
+    std::vector<int> V = {6, 9, 1, 0, 4};
+    Array<int> A(V);
+    A.sort(); // No parameters will sort Array ascending
+    A.show(); // Will print [0, 1, 4, 6, 9]
+    A.sort(Order::DESC); // Will sort Array descending
+    A.show(); // Will print [9, 6, 4, 1, 0]
+    A.sort(Order::ASC, 1, -2); // Will sort ascending from A[1] to A[3] (both inclusive)
+    A.show(); // Will print [9, 1, 4, 6, 0]
+    ```
+
+    > Ascending order: `Order::ASC = 1`  
+    Descending order: `Order::DESC = -1`  
+    **Important**: Sorting modifies the array itself
+
+- Sort an Array using custom comparator function `v.0.3+`
+
+    ```c++
+    void Array<T>::sort(bool (*sorting_comparator)(T, T), int From = 0, int To = 2147483647)
+    ```  
+
+    Example:  
+
+    ```c++
+    bool CustomComp (int V1, int V2) {
+        return V1 + V2 > 5; // Swap neighbor elements if sum is > 5 
+    }
+    ...
+    std::vector<int> V = {6, 9, 1, 0, 4};
+    Array<int> A(V);
+    A.sort(CustomComp); // sort array using custom comparison
+    /* Comparison working (using bubble sort):
+    6, 9, 1, 0, 4
+    ^--^
+    9, 6, 1, 0, 4
+       ^--^
+    9, 1, 6, 0, 4
+          ^--^
+    9, 1, 0, 6, 4
+             ^--^
+    9, 1, 0, 4, 6
+    ^--^
+    1, 9, 0, 4, 6
+       ^--^
+    1, 0, 9, 4, 6
+          ^--^
+    1, 0, 4, 9, 6
+    ^--^
+       ^--^
+    ^--^
+    */
+    A.show(); // Will print [1, 0, 4, 9, 6]
     ```
 
 ### 2.4. Arithmetic operations
@@ -588,6 +714,12 @@ std::map<char, int> = Converter::toMap(Keys, A);
 ```
 
 ## 5. Changelog
+
+### Release-0.3
+
+Changed functions containg `From` and `To` parameters from overloaded to single ones using default parameters. Now `From` by default will be 0 and `To` will be set to last Array index.  
+Added `max()`, `min()`, `slice()` and `sort()`.  
+Invalid `From - To` range will now throw an exception.
 
 ### Release-0.2
 
