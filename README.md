@@ -30,6 +30,7 @@
 4. [Converter Namespace](#4-converter-namespace)
     1) [Convert Array to other containers](#41-convert-array-to-other-containers)
 5. [Changelog](#5-changelog)
+    - [Release-0.4](#release-04)
     - [Release-0.3](#release-03)
     - [Release-0.2](#release-02)
     - [Release-0.1](#release-01)
@@ -51,9 +52,9 @@ Any suggestions to improve this library can be sent via [E-mail](https://www.din
 ### 1.3. Other
 
 File: better_array.h  
-Latest Version: [0.3](#release-03)  
+Latest Version: [0.4](#release-04)  
 Created on: 11th Nov 2022  
-Latest Update: 13th Nov 2022  
+Latest Update: 15th Nov 2022  
 Testing File: test.cpp  
 G++ Additional Compiler Flags: `-static-libstdc++`, `-std=c++17`
 
@@ -433,6 +434,80 @@ std::cout<<A[-2]<<std::endl; // Will print 0
     A.show(); // Will print [1, 0, 4, 9, 6]
     ```
 
+- Fill Array with values `v.0.4+`
+
+    ```c++
+    void Array<T>::fill(const T &Val, int From = 0, int To = 2147483647)
+    ```  
+
+    Example:  
+
+    ```c++
+    std::vector<int> V = {6, 9, 1, 0, 4};
+    Array<int> A(V);
+    A.fill(5, 1, -2);
+    A.show(); // Will print [6, 5, 5, 5, 4]
+    ```
+
+- Replace values with another values in Array `v.0.4+`
+
+    ```c++
+    void Array<T>::replace(const T &Val_Which, const T &Val_With)
+    ```  
+
+    Example:  
+
+    ```c++
+    std::vector<int> V = {6, 9, 1, 0, 1};
+    Array<int> A(V);
+    A.replace(1, 2);
+    A.show(); // Will print [6, 9, 2, 0, 2]
+    ```
+
+- Count values in Array `v.0.4+`
+
+    ```c++
+    unsigned int Array<T>::count(const T &Count_Val)
+    ```  
+
+    Example:  
+
+    ```c++
+    std::vector<int> V = {6, 9, 1, 0, 1};
+    Array<int> A(V);
+    std::cout<<A.count(1)<<std::endl; // WIll print 2
+    ```
+
+- Check if value exists in Array `v.0.4+`
+
+    ```c++
+    bool Array<T>::find(const T &Val)
+    ```  
+
+    Example:  
+
+    ```c++
+    std::vector<int> V = {6, 9, 1, 0, 1};
+    Array<int> A(V);
+    std::cout<<A.find(1)<<std::endl; // WIll print true (1)
+    ```
+
+- Find first index of value occurence in Array `v.0.4+`
+
+    ```c++
+    int Array<T>::findIndex(const T &Val)
+    ```  
+
+    Example:  
+
+    ```c++
+    std::vector<int> V = {6, 9, 1, 0, 1};
+    Array<int> A(V);
+    std::cout<<A.findIndex(1)<<std::endl; // WIll print 2
+    ```
+
+    > NOTE: If value doesn't occur findIndex will return ArrayEnd = 2147483647.
+
 ### 2.4. Arithmetic operations
 
 #### 2.4.1. Array with constant
@@ -714,6 +789,10 @@ std::map<char, int> = Converter::toMap(Keys, A);
 ```
 
 ## 5. Changelog
+
+### Release-0.4
+
+Added `fill()`, `replace()`, `count()`, `find()`, `findIndex()`.
 
 ### Release-0.3
 

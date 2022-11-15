@@ -2,8 +2,8 @@
  * @file better_array.h
  * @author DingoMC (www.dingomc.net)
  * @brief Better Arrays for C++. Manage array calculations in more modern and convenient way.
- * @version 0.3
- * @date 2022-11-13
+ * @version 0.4
+ * @date 2022-11-15
  * 
  * @copyright Copyright (c) DingoMC Systems 2022
  * @warning Library written and tested on C++11. Using older C++ Version may cause malfunction!
@@ -396,6 +396,53 @@ class Array {
                 }
                 if (!swapped) break;
             }
+        }
+        /**
+         * @brief Fill Array with values
+         * @param Val Constant
+         * @param From Starting Index (Inclusive). Default to 0
+         * @param To End Index (Inclusive). Default to Array End
+         */
+        void fill (const T& Val, int From = ArrayBegin, int To = ArrayEnd) {
+            if (To == ArrayEnd && (int) this->S < ArrayEnd) To = this->S - 1;
+            for (unsigned i = Idx(From); i <= Idx(To); i++) this->A[i] = Val;
+        }
+        /**
+         * @brief Replace all values in Array with new ones
+         * @param Val_Which Value to be replaced
+         * @param Val_With New Value
+         */
+        void replace (const T& Val_Which, const T& Val_With) {
+            for (unsigned i = 0; i < this->S; i++) if (this->A[i] == Val_Which) this->A[i] = Val_With;
+        }
+        /**
+         * @brief Returns value count in an Array
+         * @param Count_Val Counted Value
+         * @return unsigned Value Count
+         */
+        unsigned count (const T& Count_Val) {
+            unsigned cnt = 0;
+            for (unsigned i = 0; i < this->S; i++) if (this->A[i] == Count_Val) cnt++;
+            return cnt;
+        }
+        /**
+         * @brief Find Value in an Array
+         * @param Val Value to be searched for
+         * @return true - Value found
+         * @return false - Value not found
+         */
+        bool find (const T& Val) {
+            for (unsigned i = 0; i < this->S; i++) if (this->A[i] == Val) return true;
+            return false;
+        }
+        /**
+         * @brief Find array index of first value occurance
+         * @param Val Value to be searched for
+         * @return int - first found index
+         */
+        int findIndex (const T& Val) {
+            for (unsigned i = 0; i < this->S; i++) if (this->A[i] == Val) return i;
+            return ArrayEnd;
         }
         /*
             OPERATORS OVERLOADING

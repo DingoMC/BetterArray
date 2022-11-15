@@ -87,6 +87,9 @@ int main () {
     A.sort(CustomComp);
     cout<<"Fully sorted Array using custom comparison: ";
     A.show();
+    cout<<A.count(3)<<endl;
+    cout<<A.find(3)<<endl;
+    cout<<A.findIndex(3)<<endl;
     cin.ignore();
     cin.get();
     return 0;
