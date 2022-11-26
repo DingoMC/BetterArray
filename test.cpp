@@ -88,8 +88,16 @@ int main () {
     cout<<"Fully sorted Array using custom comparison: ";
     A.show();
     cout<<A.count(3)<<endl;
+    cout<<A.contains(3)<<endl;
     cout<<A.find(3)<<endl;
-    cout<<A.findIndex(3)<<endl;
+    vector<int> check = {7, 8, 10};
+    cout<<A.contains(Array<int>(check))<<endl;
+    cout<<A.find(Array<int>(check))<<endl;
+    vector<char> CV = {'A', 'B', 'C'};
+    Array<char> C(CV);
+    string conv_string = Converter::toString(C);
+    cout<<conv_string<<endl;
+    Converter::toCharArray(conv_string).show(true);
     cin.ignore();
     cin.get();
     return 0;

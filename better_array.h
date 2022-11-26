@@ -426,22 +426,54 @@ class Array {
             return cnt;
         }
         /**
-         * @brief Find Value in an Array
+         * @brief Check if Array contains a value
          * @param Val Value to be searched for
          * @return true - Value found
          * @return false - Value not found
          */
-        bool find (const T& Val) {
+        bool contains (const T& Val) {
             for (unsigned i = 0; i < this->S; i++) if (this->A[i] == Val) return true;
+            return false;
+        }
+        /**
+         * @brief Check if Array contains Sub-Array
+         * @param SubArray Sub-Array to be searched for
+         * @return true - Sub-Array found
+         * @return false - Sub-Array not found
+         */
+        bool contains (const Array <T> &SubArray) {
+            if (this->S < SubArray.S);
+            int current_search = 0;
+            for (unsigned i = 0; i < this->S; i++) {
+                if (this->A[i] == SubArray[current_search]) current_search++;
+                else current_search = 0;
+                if (current_search == SubArray.S) return true;
+            }
             return false;
         }
         /**
          * @brief Find array index of first value occurance
          * @param Val Value to be searched for
-         * @return int - first found index
+         * @return int - first found index, if not found it returns ArrayEnd = 2147483647
          */
-        int findIndex (const T& Val) {
+        int find (const T& Val) {
             for (unsigned i = 0; i < this->S; i++) if (this->A[i] == Val) return i;
+            return ArrayEnd;
+        }
+        /**
+         * @brief Find array index of first Sub-Array occurance
+         * @param SubArray Sub-Array to be searched for
+         * @return int - first found index, if not found it returns ArrayEnd = 2147483647
+         */
+        int find (const Array <T> &SubArray) {
+            if (this->S < SubArray.S);
+            int current_search = 0, found_index = 0;
+            for (unsigned i = 0; i < this->S; i++) {
+                if (current_search == 0) found_index = i;
+                if (this->A[i] == SubArray[current_search]) current_search++;
+                else current_search = 0;
+                if (current_search == SubArray.S) return found_index;
+            }
             return ArrayEnd;
         }
         /*
@@ -787,6 +819,26 @@ namespace Converter {
         map<T, U> NewContainer;
         for (unsigned i = 0; i < Keys.size(); i++) NewContainer.insert(make_pair(Keys[i], Values[i]));
         return NewContainer;
+    }
+    /**
+     * @brief Convert Char Array to STD string
+     * @param Char_Array 
+     * @return string 
+     */
+    string toString (const Array<char> &Char_Array) {
+        string s = "";
+        for (unsigned i = 0; i < Char_Array.size(); i++) s += Char_Array[i];
+        return s;
+    }
+    /**
+     * @brief Convert STD string to Char Array
+     * @param STD_String 
+     * @return Array<char> 
+     */
+    Array<char> toCharArray (const string &STD_String) {
+        Array<char> A;
+        for (unsigned i = 0; i < STD_String.length(); i++) A.append(STD_String.at(i));
+        return A;
     }
 }
 #endif // !BETTER_ARRAY_H

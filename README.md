@@ -29,7 +29,9 @@
     1) [Show Containers](#31-show-containers)
 4. [Converter Namespace](#4-converter-namespace)
     1) [Convert Array to other containers](#41-convert-array-to-other-containers)
+    2) [Convert between Char Array and String](#42-convert-char-array-to-string-and-vice-versa)
 5. [Changelog](#5-changelog)
+    - [Release-0.5](#release-05)
     - [Release-0.4](#release-04)
     - [Release-0.3](#release-03)
     - [Release-0.2](#release-02)
@@ -52,9 +54,9 @@ Any suggestions to improve this library can be sent via [E-mail](https://www.din
 ### 1.3. Other
 
 File: better_array.h  
-Latest Version: [0.4](#release-04)  
+Latest Version: [0.5](#release-05)  
 Created on: 11th Nov 2022  
-Latest Update: 15th Nov 2022  
+Latest Update: 26th Nov 2022  
 Testing File: test.cpp  
 G++ Additional Compiler Flags: `-static-libstdc++`, `-std=c++17`
 
@@ -480,8 +482,10 @@ std::cout<<A[-2]<<std::endl; // Will print 0
 
 - Check if value exists in Array `v.0.4+`
 
+    *Before v.0.4: find()*
+
     ```c++
-    bool Array<T>::find(const T &Val)
+    bool Array<T>::contains(const T &Val)
     ```  
 
     Example:  
@@ -489,13 +493,32 @@ std::cout<<A[-2]<<std::endl; // Will print 0
     ```c++
     std::vector<int> V = {6, 9, 1, 0, 1};
     Array<int> A(V);
-    std::cout<<A.find(1)<<std::endl; // WIll print true (1)
+    std::cout<<A.contains(1)<<std::endl; // WIll print true (1)
     ```
+
+- Check if sub-array exists in Array `v.0.5+`
+
+    ```c++
+    bool Array<T>::contains(const Array<T> &SubArray)
+    ```  
+
+    Example:  
+
+    ```c++
+    std::vector<int> V = {6, 9, 1, 0, 1};
+    std::vector<int> V2 = {9, 1, 0};
+    Array<int> A(V);
+    std::cout<<A.contains(Array<int>(V2))<<std::endl; // WIll print true (1)
+    ```
+
+    > NOTE: If Sub-Array length is longer than base Array it will always return **false**
 
 - Find first index of value occurence in Array `v.0.4+`
 
+    *Before v.0.4: findIndex()*
+
     ```c++
-    int Array<T>::findIndex(const T &Val)
+    int Array<T>::find(const T &Val)
     ```  
 
     Example:  
@@ -503,10 +526,25 @@ std::cout<<A[-2]<<std::endl; // Will print 0
     ```c++
     std::vector<int> V = {6, 9, 1, 0, 1};
     Array<int> A(V);
-    std::cout<<A.findIndex(1)<<std::endl; // WIll print 2
+    std::cout<<A.find(1)<<std::endl; // WIll print 2
     ```
 
-    > NOTE: If value doesn't occur findIndex will return ArrayEnd = 2147483647.
+    > NOTE: If value doesn't occur, function returns ArrayEnd = 2147483647.
+
+- Find first index of sub-array occurence in Array `v.0.5+`
+
+    ```c++
+    int Array<T>::find(const Array<T> &SubArray)
+    ```  
+
+    Example:  
+
+    ```c++
+    std::vector<int> V = {6, 9, 1, 9, 1};
+    std::vector<int> V2 = {9, 1};
+    Array<int> A(V);
+    std::cout<<A.find(Array<int>(V2))<<std::endl; // WIll print 1
+    ```
 
 ### 2.4. Arithmetic operations
 
@@ -788,7 +826,32 @@ Array<int> Keys(Init2);
 std::map<char, int> = Converter::toMap(Keys, A);
 ```
 
+### 4.2. Convert Char Array to String and vice versa
+
+`v.0.5+`
+
+```c++
+std::string Converter::toString(const Array<char> &Char_Array)
+Array<char> Converter::toCharArray(const std::string &STD_String)
+```
+
+Example:
+
+```c++
+std::vector<int> Init = {'A', 'B', 'C', 'D'};
+Array<int> A(Init);
+std::string conv_string = Converter::toString(A);
+std::cout<<conv_string<<std::endl; // Will print ABCD
+Converter::toCharArray(conv_string).show(true); // Will print `Array` [A, B, C, D]
+```
+
 ## 5. Changelog
+
+### Release-0.5
+
+Replaced `find()` with `contains()` with additional Sub-Array search.  
+`findIndex()` is now `find()` and also supports Sub-Array search.  
+Added converter between Char Array and String.
 
 ### Release-0.4
 
