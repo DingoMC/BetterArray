@@ -2,8 +2,8 @@
  * @file better_array.h
  * @author DingoMC (www.dingomc.net)
  * @brief Better Arrays for C++. Manage array calculations in more modern and convenient way.
- * @version 0.4
- * @date 2022-11-15
+ * @version 0.5
+ * @date 2022-11-26
  * 
  * @copyright Copyright (c) DingoMC Systems 2022
  * @warning Library written and tested on C++11. Using older C++ Version may cause malfunction!
