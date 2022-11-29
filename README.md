@@ -899,7 +899,7 @@ Array<int> A(Init);
 Files::saveArray(A, "A.txt");   // File will contain 1 2 3 4
 ```
 
-## 5.2. Read Array from File
+### 5.2. Read Array from File
 
 `v.0.6+`
 
@@ -915,7 +915,7 @@ Array<int> A = Files::readArray<int>("A.txt");
 
 > Important: File must contain valid values and have last line **empty**!
 
-## 5.3. Append Array to a File
+### 5.3. Append Array to a File
 
 `v.0.6+`
 
