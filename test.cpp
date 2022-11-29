@@ -87,17 +87,23 @@ int main () {
     A.sort(CustomComp);
     cout<<"Fully sorted Array using custom comparison: ";
     A.show();
-    cout<<A.count(3)<<endl;
-    cout<<A.contains(3)<<endl;
-    cout<<A.find(3)<<endl;
+    cout<<"Check if value 3 exists: "<<A.contains(3)<<endl;
+    cout<<"Count occurences of value 3: "<<A.count(3)<<endl;
+    cout<<"Find first index of value 3 occurence: "<<A.find(3)<<endl;
+    cout<<"Find all indices where 3 occurs: ";
+    A.findAll(3).show();
     vector<int> check = {7, 8, 10};
-    cout<<A.contains(Array<int>(check))<<endl;
-    cout<<A.find(Array<int>(check))<<endl;
+    cout<<"Sub-array checking: "<<A.contains(Array<int>(check))<<endl;
+    cout<<"Find first index where sub-array begins: "<<A.find(Array<int>(check))<<endl;
+    A.findAll(Array<int>(check)).show();
     vector<char> CV = {'A', 'B', 'C'};
     Array<char> C(CV);
     string conv_string = Converter::toString(C);
     cout<<conv_string<<endl;
     Converter::toCharArray(conv_string).show(true);
+    /*Files::saveArray(A, "A.txt");
+    Files::appendArray(A, "A.txt");
+    Files::readArray<int>("A.txt").show();*/
     cin.ignore();
     cin.get();
     return 0;

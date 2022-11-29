@@ -2,8 +2,8 @@
  * @file better_array.h
  * @author DingoMC (www.dingomc.net)
  * @brief Better Arrays for C++. Manage array calculations in more modern and convenient way.
- * @version 0.5
- * @date 2022-11-26
+ * @version 0.6
+ * @date 2022-11-28
  * 
  * @copyright Copyright (c) DingoMC Systems 2022
  * @warning Library written and tested on C++11. Using older C++ Version may cause malfunction!
@@ -12,6 +12,7 @@
 #ifndef BETTER_ARRAY_H
 #define BETTER_ARRAY_H
 #include <iostream>
+#include <fstream>
 #include <stdexcept>
 #include <vector>
 #include <list>
@@ -19,12 +20,15 @@
 #include <map>
 #pragma GCC optimize("O3")
 #define MAX_S(a, b) a > b ? a : b
-#define ArrayBegin 0
-#define ArrayEnd 2147483647
+#define ArrayBegin 0                // Min index available
+#define ArrayEnd 2147483647         // Max index available
 using namespace std;
-template <class T> class Array;
-typedef Array<bool> ArrayMask;
-enum Order {ASC = 1, DESC = -1};
+template <class T> class Array;     // Main Array Class
+typedef Array<bool> ArrayMask;      // ArrayMask as Array<bool>
+enum Order {ASC = 1, DESC = -1};    // Sorting Order
+/**
+ * @brief Container namespace for printing functions
+ */
 namespace Container {
     // Printing Functions
     template<class T> void show(T Elem, bool = false, bool = false);
@@ -114,6 +118,7 @@ namespace Container {
     }
 }
 template <class T>
+// Main Array Class
 class Array {
     private:
         vector < T > A;
@@ -476,6 +481,36 @@ class Array {
             }
             return ArrayEnd;
         }
+        /**
+         * @brief Find all array indices where value occurs
+         * @param Val Value to be searched for
+         * @return Array<int> Array of indices
+         */
+        Array<int> findAll (const T& Val) {
+            Array<int> X;
+            for (unsigned i = 0; i < this->S; i++) if (this->A[i] == Val) X.append(i);
+            return X;
+        }
+        /**
+         * @brief Find all array indices where sub-array begins
+         * @param SubArray Sub-Array to be searched for
+         * @return Array<int> Array of indices
+         */
+        Array<int> findAll (const Array <T> &SubArray) {
+            if (this->S < SubArray.S);
+            Array<int> X;
+            int current_search = 0, iter_index = 0;
+            for (unsigned i = 0; i < this->S; i++) {
+                if (current_search == 0) iter_index = i;
+                if (this->A[i] == SubArray[current_search]) current_search++;
+                else current_search = 0;
+                if (current_search == SubArray.S) {
+                    X.append(iter_index);
+                    current_search = 0;
+                }
+            }
+            return X;
+        }
         /*
             OPERATORS OVERLOADING
         */
@@ -754,6 +789,9 @@ class Array {
             return ArrayMask(this->A);
         }
 };
+/**
+ * @brief Converter namespace for Array conversions and more
+ */
 namespace Converter {
     /**
      * @brief Convert Array to Dynamic Pointer Array
@@ -839,6 +877,54 @@ namespace Converter {
         Array<char> A;
         for (unsigned i = 0; i < STD_String.length(); i++) A.append(STD_String.at(i));
         return A;
+    }
+}
+namespace Files {
+    /**
+     * @brief Save Array to a file
+     * @tparam T Any
+     * @param Arr Array
+     * @param FileName File Name
+     */
+    template <class T>
+    void saveArray (const Array<T> &Arr, const string &FileName) {
+        fstream f;
+        f.open(FileName, ios::out);
+        for (unsigned i = 0; i < Arr.size(); i++) f<<Arr[i]<<endl;
+        f.close();
+    }
+    /**
+     * @brief Append array to an existing file
+     * @tparam T Any
+     * @param Arr Array
+     * @param FileName File Name
+     */
+    template <class T>
+    void appendArray (const Array<T> &Arr, const string &FileName) {
+        fstream f;
+        f.open(FileName, ios::app);
+        for (unsigned i = 0; i < Arr.size(); i++) f<<Arr[i]<<endl;
+        f.close();
+    }
+    /**
+     * @brief Get Array from File
+     * @tparam T Array Type
+     * @param FileName File Name
+     * @return Array<T> 
+     */
+    template <class T>
+    Array<T> readArray (const string &FileName) {
+        Array<T> X;
+        fstream f;
+        f.open(FileName, ios::in);
+        while (!f.eof()) {
+            T val;
+            f>>val;
+            X.append(val);
+        }
+        X.pop();
+        f.close();
+        return X;
     }
 }
 #endif // !BETTER_ARRAY_H

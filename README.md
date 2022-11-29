@@ -30,7 +30,12 @@
 4. [Converter Namespace](#4-converter-namespace)
     1) [Convert Array to other containers](#41-convert-array-to-other-containers)
     2) [Convert between Char Array and String](#42-convert-char-array-to-string-and-vice-versa)
-5. [Changelog](#5-changelog)
+5. [Files Namespace](#5-files-namespace)
+    1) [Save Array to File](#51-save-array-to-file)
+    2) [Read Array from File](#52-read-array-from-file)
+    3) [Append Array to File](#53-append-array-to-a-file)
+6. [Changelog](#6-changelog)
+    - [Release-0.6](#release-06)
     - [Release-0.5](#release-05)
     - [Release-0.4](#release-04)
     - [Release-0.3](#release-03)
@@ -54,9 +59,9 @@ Any suggestions to improve this library can be sent via [E-mail](https://www.din
 ### 1.3. Other
 
 File: better_array.h  
-Latest Version: [0.5](#release-05)  
+Latest Version: [0.6](#release-06)  
 Created on: 11th Nov 2022  
-Latest Update: 26th Nov 2022  
+Latest Update: 29th Nov 2022  
 Testing File: test.cpp  
 G++ Additional Compiler Flags: `-static-libstdc++`, `-std=c++17`
 
@@ -515,7 +520,7 @@ std::cout<<A[-2]<<std::endl; // Will print 0
 
 - Find first index of value occurence in Array `v.0.4+`
 
-    *Before v.0.4: findIndex()*
+    *Before v.0.5: findIndex()*
 
     ```c++
     int Array<T>::find(const T &Val)
@@ -544,6 +549,37 @@ std::cout<<A[-2]<<std::endl; // Will print 0
     std::vector<int> V2 = {9, 1};
     Array<int> A(V);
     std::cout<<A.find(Array<int>(V2))<<std::endl; // WIll print 1
+    ```
+
+- Find all indices where value occurs in Array `v.0.6+`
+
+    ```c++
+    Array<int> Array<T>::findAll(const T &Val)
+    ```  
+
+    Example:  
+
+    ```c++
+    std::vector<int> V = {6, 9, 1, 0, 1};
+    Array<int> A(V);
+    A.findAll(1).show(); // WIll print [2, 4]
+    ```
+
+    > NOTE: If value doesn't occur, function returns empty Array [].
+
+- Find all indices where sub-array occurs in Array `v.0.6+`
+
+    ```c++
+    Array<int> Array<T>::findAll(const Array<T> &SubArray)
+    ```  
+
+    Example:  
+
+    ```c++
+    std::vector<int> V = {1, 2, 3, 1, 2, 1, 2, 3};
+    std::vector<int> F = {1, 2, 3};
+    Array<int> A(V);
+    A.findAll(Array<int>(F)).show(); // WIll print [0, 5]
     ```
 
 ### 2.4. Arithmetic operations
@@ -845,7 +881,63 @@ std::cout<<conv_string<<std::endl; // Will print ABCD
 Converter::toCharArray(conv_string).show(true); // Will print `Array` [A, B, C, D]
 ```
 
-## 5. Changelog
+## 5. Files Namespace
+
+### 5.1. Save Array to File
+
+`v.0.6+`
+
+```c++
+void Files::saveArray(const Array<T> &Arr, const std::string &FileName)
+```
+
+Example:
+
+```c++
+std::vector<int> Init = {1, 2, 3, 4};
+Array<int> A(Init);
+Files::saveArray(A, "A.txt");   // File will contain 1 2 3 4
+```
+
+## 5.2. Read Array from File
+
+`v.0.6+`
+
+```c++
+Array<T> Files::readArray(const std::string &FileName)
+```
+
+Example:
+
+```c++
+Array<int> A = Files::readArray<int>("A.txt");
+```
+
+> Important: File must contain valid values and have last line **empty**!
+
+## 5.3. Append Array to a File
+
+`v.0.6+`
+
+```c++
+void Files::appendArray(const Array<T> &Arr, const std::string &FileName)
+```
+
+Example:
+
+```c++
+std::vector<int> Init = {1, 2, 3, 4};
+Array<int> A(Init);
+Files::saveArray(A, "A.txt");   // File will contain 1 2 3 4
+Files::appendArray(A, "A.txt"); // File will contain 1 2 3 4 1 2 3 4
+```
+
+## 6. Changelog
+
+### Release-0.6
+
+Added `findAll()` for values and sub-arrays.
+Added Files namespace containing operation on Files with Arrays.
 
 ### Release-0.5
 
