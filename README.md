@@ -937,7 +937,7 @@ Files::appendArray(A, "A.txt"); // File will contain 1 2 3 4 1 2 3 4
 ### Release-0.6
 
 Added `findAll()` for values and sub-arrays.
-Added Files namespace containing operation on Files with Arrays.
+Added [Files namespace](#5-files-namespace) containing operation on Files with Arrays.
 
 ### Release-0.5
 
