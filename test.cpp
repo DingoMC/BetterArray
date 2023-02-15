@@ -10,23 +10,22 @@ bool CustomComp (int V1, int V2) {
     return V1 + V2 > 5;
 }
 int main () {
-    Array < int > A;
-    Array < int > B;
-    for (int i = 0; i < 5; i++) A.append(i);
-    for (int i = 5; i < 10; i++) B.append(i);
-    vector < int > v1 = {1, 2, 5};
-    A.pop();
-    A.insert(1, 5);
-    A.insert(-2, 4);
-    A.erase(1);
-    A.erase(-1);
-    A.append(Array<int>(v1));
-    A.insert(1, Array<int>(v1));
-    A.erase(1, 3);
+    Array < int > A({0, 1, 2, 3, 4});
+    Array < int > B({5, 6, 7, 8, 9});
+    A.pop();                    // 0, 1, 2, 3
+    A.insert(1, 5);             // 0, 5, 1, 2, 3
+    A.insert(-2, 4);            // 0, 5, 1, 2, 4, 3
+    A.erase(1);                 // 0, 1, 2, 4, 3
+    A.erase(-1);                // 0, 1, 2, 4
+    A.append({1, 2, 5});        // 0, 1, 2, 4, 1, 2, 5
+    A.insert(1, {1, 2, 5});     // 0, 1, 2, 5, 1, 2, 4, 1, 2, 5
+    A.erase(1, 3);              // 0, 1, 2, 4, 1, 2, 5
     cout<<"A: ";
     A.show();
     cout<<"B: ";
     B.show();
+    cout<<"Unique A: ";
+    A.unique().show();
     cout<<"A -= 2 (modifies Array): ";
     A -= 2;
     A.show();
@@ -73,8 +72,10 @@ int main () {
     Container::show(Converter::toSet(A), true);
     vector<char> keys = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
     Container::show(Converter::toMap(Array<char>(keys), A), true);
-    cout<<A.max()<<endl;
-    cout<<A.min()<<endl;
+    cout<<A.max()<<" - ";
+    A.argmax().show();
+    cout<<A.min()<<" - ";
+    A.argmin().show();
     cout<<A.mean()<<endl;
     cout<<A.max(-3, -1)<<endl;
     cout<<A.min(-3, -1)<<endl;
@@ -92,10 +93,9 @@ int main () {
     cout<<"Find first index of value 3 occurence: "<<A.find(3)<<endl;
     cout<<"Find all indices where 3 occurs: ";
     A.findAll(3).show();
-    vector<int> check = {7, 8, 10};
-    cout<<"Sub-array checking: "<<A.contains(Array<int>(check))<<endl;
-    cout<<"Find first index where sub-array begins: "<<A.find(Array<int>(check))<<endl;
-    A.findAll(Array<int>(check)).show();
+    cout<<"Sub-array checking: "<<A.contains({7, 8, 10})<<endl;
+    cout<<"Find first index where list begins: "<<A.find({7, 8, 10})<<endl;
+    A.findAll({7, 8, 10}).show();
     vector<char> CV = {'A', 'B', 'C'};
     Array<char> C(CV);
     string conv_string = Converter::toString(C);

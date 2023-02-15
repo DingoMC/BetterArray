@@ -35,6 +35,7 @@
     2) [Read Array from File](#52-read-array-from-file)
     3) [Append Array to File](#53-append-array-to-a-file)
 6. [Changelog](#6-changelog)
+    - [Release-0.7](#release-07)
     - [Release-0.6](#release-06)
     - [Release-0.5](#release-05)
     - [Release-0.4](#release-04)
@@ -59,9 +60,9 @@ Any suggestions to improve this library can be sent via [E-mail](https://www.din
 ### 1.3. Other
 
 File: better_array.h  
-Latest Version: [0.6](#release-06)  
+Latest Version: [0.7](#release-07)  
 Created on: 11th Nov 2022  
-Latest Update: 29th Nov 2022  
+Latest Update: 15th Feb 2023  
 Testing File: test.cpp  
 G++ Additional Compiler Flags: `-static-libstdc++`, `-std=c++17`
 
@@ -146,6 +147,18 @@ G++ Additional Compiler Flags: `-static-libstdc++`, `-std=c++17`
     Array<int> A(S);
     ```
 
+- Create Array using Initializer List `v.0.7+`
+
+    ```c++
+    Array<T>::Array(std::initializer_list<T> InitValues)
+    ```
+
+    Example:
+
+    ```c++
+    Array<double> A({2.5, -1.7, 0.2, 8});
+    ```
+
 ### 2.2. Array Indexing
 
 `v.0.1+`
@@ -161,8 +174,7 @@ Table of Array indexing
 Example:
 
 ```c++
-std::vector<int> V = {6, 9, 1, 0, 3};
-Array<int> A(V);
+Array<int> A({6, 9, 1, 0, 3});
 std::cout<<A[1]<<std::endl; // Will print 9
 std::cout<<A[-2]<<std::endl; // Will print 0
 ```
@@ -178,129 +190,89 @@ std::cout<<A[-2]<<std::endl; // Will print 0
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 3};
-    Array<int> A(V);
+    Array<int> A({6, 9, 1, 0, 3});
     int s = A.size(); // s = 5
     ```
 
 - Show Array `v.0.1+`
 
     ```c++
-    void Array<T>::show(bool showType = false);
+    void Array<T>::show(bool showType = false)
     ```  
 
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 3};
-    Array<int> A(V);
+    Array<int> A({6, 9, 1, 0, 3});
     A.show();       // Will print: [6, 9, 1, 0, 3]
     A.show(true);   // Will print: `Array` [6, 9, 1, 0, 3]
     ```
 
-- Add Element to the end of Array `v.0.1+`
+- Add element, another array `v.0.1+` or value list `v.0.7+` to the end of Array
 
     ```c++
-    void Array<T>::append(T Elem);
+    void Array<T>::append(T Elem)
+    void Array<T>::append(Array<T> arr)
+    void Array<T>::append(std::initializer_list<T> Values)
     ```  
 
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 3};
-    Array<int> A(V);
-    A.append(7);    // A = [6, 9, 1, 0, 3, >7<]
-    ```
-
-- Add another array to the end of Array `v.0.1+`
-
-    ```c++
-    void Array<T>::append(Array<T> arr);
-    ```  
-
-    Example:  
-
-    ```c++
-    std::vector<int> V = {6, 9, 1, 0, 3};
-    std::vector<int> V2 = {5, 0, 8};
-    Array<int> A(V);
-    Array<int> B(V2);
-    A.append(B);    // A = [6, 9, 1, 0, 3, >5, 0, 8<]
+    Array<int> A({6, 9, 1});
+    A.append(7);    // A = [6, 9, 1, >7<]
+    Array<int> B({5, 0});
+    A.append(B);    // A = [6, 9, 1, 7, >5, 0<]
+    A.append({4, 5}); // A = [6, 9, 1, 7, 5, 0, 4, 5]
     ```
 
 - Remove last element of an Array `v.0.1+`
 
     ```c++
-    void Array<T>::pop();
+    void Array<T>::pop()
     ```  
 
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 3};
-    Array<int> A(V);
+    Array<int> A({6, 9, 1, 0, 3});
     A.pop();    // A = [6, 9, 1, 0]
     ```
 
-- Insert element into Array at given index `v.0.1+`
+- Insert element, another array `v.0.1+` or value list `v.0.7+` into Array at given index
 
     ```c++
-    void Array<T>::insert(int Where, T Elem);
+    void Array<T>::insert(int Where, T Elem)
+    void Array<T>::insert(int Where, Array<T> arr)
+    void Array<T>::insert(int Where, std::initializer_list<T> Values)
     ```  
 
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 3};
-    Array<int> A(V);
-    A.insert(-2, 5);    // A = [6, 9, 1, 0, >5<, 3]
+    Array<int> A({6, 9, 1});
+    A.insert(-2, 5);    // A = [6, 9, >5<, 1]
+    Array<int> B({0, 8});
+    A.insert(1, B);     // A = [6, >0, 8<, 9, 5, 1]
+    A.insert(2, {0, 1});// A = [6, 0, >0, 1<, 8, 9, 5, 1]
     ```
 
-- Insert another Array into Array at given index `v.0.1+`
+- Remove element(s) at given index or index range from Array `v.0.1+`
 
     ```c++
-    void Array<T>::insert(int Where, Array<T> arr);
+    void Array<T>::erase(int Which)
+    void Array<T>::erase(int From, int To)
     ```  
 
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 3};
-    std::vector<int> V2 = {5, 0, 8};
-    Array<int> A(V);
-    Array<int> B(V2);
-    A.insert(1, B);     // A = [6, >5, 0, 8<, 9, 1, 0, 5, 3]
-    ```
-
-- Remove element at given index from Array `v.0.1+`
-
-    ```c++
-    void Array<T>::erase(int Which);
-    ```  
-
-    Example:  
-
-    ```c++
-    std::vector<int> V = {6, 9, 1, 0, 3};
-    Array<int> A(V);
+    Array<int> A({6, 9, 1, 0, 3});
     A.erase(2);    // A = [6, 9, 0, 3]
-    ```
-
-- Remove elements from Array in given index range `v.0.1+`
-
-    ```c++
-    void Array<T>::erase(int From, int To);
-    ```  
-
-    Example:
-
-    ```c++
-    std::vector<int> V = {6, 9, 1, 0, 3};
-    Array<int> A(V);
     A.erase(1, -2);    // A = [6, 3]
     ```
 
-    > **Important!** Parameter `From` should always be the first index and `To` second. They are non-commutative (i.e. `erase(3, 1)` is not going to work cause `3` is further in order than `1`).
+    > **Important!** Parameter `From` should always be the first index and `To` second. They are non-commutative (i.e. `erase(3, 1)` is not going to work, because `3` is further in order than `1`).
 
 - Reverse an Array `v.0.1+`
 
@@ -311,41 +283,32 @@ std::cout<<A[-2]<<std::endl; // Will print 0
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 3};
-    Array<int> A(V);
+    Array<int> A({6, 9, 1, 0, 3});
     A.reverse();    // A = [3, 0, 1, 9, 6]
     ```
 
-- Get Maximum value from Array `v.0.3+`
+- Get Maximum/Minimum value `v.0.3+` or indices `v.0.7+` of Array
 
     ```c++
     T Array<T>::max(int From = 0, int To = 2147483647)
+    Array<int> Array<T>::argmax(int From = 0, int To = 2147483647)
+    T Array<T>::min(int From = 0, int To = 2147483647)
+    Array<int> Array<T>::argmin(int From = 0, int To = 2147483647)
     ```  
 
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 3};
-    Array<int> A(V);
+    Array<int> A({6, 9, 1, 0, 3});
     cout<<A.max()<<endl; // Will print 9
     // Getting Max from range A[2] to A[4] (both inclusive)
     cout<<A.max(2, -1)<<endl; // Will print 3
-    ```
+    A.argmax().show();  // Will print [1]
 
-- Get Minimum value from Array `v.0.3+`
-
-    ```c++
-    T Array<T>::max(int From = 0, int To = 2147483647)
-    ```  
-
-    Example:  
-
-    ```c++
-    std::vector<int> V = {6, 9, 1, 0, 3};
-    Array<int> A(V);
     cout<<A.min()<<endl; // Will print 0
     // Getting Max from range A[0] to A[2] (both inclusive)
     cout<<A.min(0, 2)<<endl; // Will print 1
+    A.argmin().show();  // Will print [3]
     ```
 
 - Get Arithmetic Average of Array `v.0.3+`
@@ -357,8 +320,7 @@ std::cout<<A[-2]<<std::endl; // Will print 0
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 4};
-    Array<int> A(V);
+    Array<int> A({6, 9, 1, 0, 4});
     cout<<A.mean()<<endl; // Will print 4
     // Getting Mean from range A[0] to A[3] (both inclusive)
     cout<<A.mean(0, -2)<<endl; // Will print 4 = (6+9+1+0)/4
@@ -373,8 +335,7 @@ std::cout<<A[-2]<<std::endl; // Will print 0
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 4};
-    Array<int> A(V);
+    Array<int> A({6, 9, 1, 0, 4});
     A.slice().show(); // No parameters will print whole Array
     A.slice(1, -2).show(); // Will print [9, 1, 0]
     ```
@@ -388,8 +349,7 @@ std::cout<<A[-2]<<std::endl; // Will print 0
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 4};
-    Array<int> A(V);
+    Array<int> A({6, 9, 1, 0, 4});
     A.sort(); // No parameters will sort Array ascending
     A.show(); // Will print [0, 1, 4, 6, 9]
     A.sort(Order::DESC); // Will sort Array descending
@@ -415,8 +375,7 @@ std::cout<<A[-2]<<std::endl; // Will print 0
         return V1 + V2 > 5; // Swap neighbor elements if sum is > 5 
     }
     ...
-    std::vector<int> V = {6, 9, 1, 0, 4};
-    Array<int> A(V);
+    Array<int> A({6, 9, 1, 0, 4});
     A.sort(CustomComp); // sort array using custom comparison
     /* Comparison working (using bubble sort):
     6, 9, 1, 0, 4
@@ -450,8 +409,7 @@ std::cout<<A[-2]<<std::endl; // Will print 0
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 4};
-    Array<int> A(V);
+    Array<int> A({6, 9, 1, 0, 4});
     A.fill(5, 1, -2);
     A.show(); // Will print [6, 5, 5, 5, 4]
     ```
@@ -465,8 +423,7 @@ std::cout<<A[-2]<<std::endl; // Will print 0
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 1};
-    Array<int> A(V);
+    Array<int> A({6, 9, 1, 0, 1});
     A.replace(1, 2);
     A.show(); // Will print [6, 9, 2, 0, 2]
     ```
@@ -480,106 +437,85 @@ std::cout<<A[-2]<<std::endl; // Will print 0
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 1};
-    Array<int> A(V);
+    Array<int> A({6, 9, 1, 0, 1});
     std::cout<<A.count(1)<<std::endl; // WIll print 2
     ```
 
-- Check if value exists in Array `v.0.4+`
+- Check if value `v.0.4+`, sub-array `v.0.5+` or value list `v.0.7+` exists in Array
 
     *Before v.0.4: find()*
 
     ```c++
     bool Array<T>::contains(const T &Val)
-    ```  
-
-    Example:  
-
-    ```c++
-    std::vector<int> V = {6, 9, 1, 0, 1};
-    Array<int> A(V);
-    std::cout<<A.contains(1)<<std::endl; // WIll print true (1)
-    ```
-
-- Check if sub-array exists in Array `v.0.5+`
-
-    ```c++
     bool Array<T>::contains(const Array<T> &SubArray)
+    bool Array<T>::contains(std::initializer_list<T> Values)
     ```  
 
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 1};
-    std::vector<int> V2 = {9, 1, 0};
-    Array<int> A(V);
-    std::cout<<A.contains(Array<int>(V2))<<std::endl; // WIll print true (1)
+    Array<int> A({6, 9, 1, 0, 1});
+    std::cout<<A.contains(1)<<std::endl; // WIll print true (1)
+    Array<int> S({9, 1, 0});
+    std::cout<<A.contains(S)<<std::endl; // WIll print true (1)
+    std::cout<<A.contains({9, 1, 0})<<std::endl; // WIll print true (1)
     ```
 
     > NOTE: If Sub-Array length is longer than base Array it will always return **false**
 
-- Find first index of value occurence in Array `v.0.4+`
+- Find first index of value `v.0.4+`, sub-array `v.0.5+` or value list `v.0.7+` occurence in Array
 
-    *Before v.0.5: findIndex()*
+    *Before v.0.4: findIndex()*
 
     ```c++
     int Array<T>::find(const T &Val)
-    ```  
-
-    Example:  
-
-    ```c++
-    std::vector<int> V = {6, 9, 1, 0, 1};
-    Array<int> A(V);
-    std::cout<<A.find(1)<<std::endl; // WIll print 2
-    ```
-
-    > NOTE: If value doesn't occur, function returns ArrayEnd = 2147483647.
-
-- Find first index of sub-array occurence in Array `v.0.5+`
-
-    ```c++
     int Array<T>::find(const Array<T> &SubArray)
+    int Array<T>::find(std::initializer_list<T> Values)
     ```  
 
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 9, 1};
-    std::vector<int> V2 = {9, 1};
-    Array<int> A(V);
-    std::cout<<A.find(Array<int>(V2))<<std::endl; // WIll print 1
+    Array<int> A({6, 9, 1, 9, 1});
+    std::cout<<A.find(1)<<std::endl; // WIll print 2
+    Array<int> B({9, 1});
+    std::cout<<A.find(B)<<std::endl; // WIll print 1
+    std::cout<<A.find({6, 9, 1})<<std::endl; // Will print 0
     ```
 
-- Find all indices where value occurs in Array `v.0.6+`
+    > NOTE: If there is no occurence, function returns ArrayEnd = 2147483647.
+
+- Find all indices where value, sub-array `v.0.6+` or value list `v.0.7+` occurs in Array
 
     ```c++
     Array<int> Array<T>::findAll(const T &Val)
+    Array<int> Array<T>::findAll(const Array<T> &SubArray)
+    Array<int> Array<T>::findAll(std::initializer_list<T> Values)
     ```  
 
     Example:  
 
     ```c++
-    std::vector<int> V = {6, 9, 1, 0, 1};
-    Array<int> A(V);
+    Array<int> A({6, 9, 1, 9, 1});
     A.findAll(1).show(); // WIll print [2, 4]
+    Array<int> B({9, 1});
+    A.findAll(B).show(); // Will print [1, 3]
+    A.findAll({1, 9}).show(); // Will print [2]
     ```
 
-    > NOTE: If value doesn't occur, function returns empty Array [].
+    > NOTE: If there is no occurance, function returns empty Array [].
 
-- Find all indices where sub-array occurs in Array `v.0.6+`
-
-    ```c++
-    Array<int> Array<T>::findAll(const Array<T> &SubArray)
-    ```  
-
-    Example:  
+- Get Array with removed duplicates `v.0.7+`
 
     ```c++
-    std::vector<int> V = {1, 2, 3, 1, 2, 1, 2, 3};
-    std::vector<int> F = {1, 2, 3};
-    Array<int> A(V);
-    A.findAll(Array<int>(F)).show(); // WIll print [0, 5]
+    Array<T> Array<T>::unique()
+    ```
+
+    Example:
+
+    ```c++
+    Array<int> A({6, 9, 1, 9, 1});
+    A.unique().show(); // Will print [6, 9, 1]
     ```
 
 ### 2.4. Arithmetic operations
@@ -592,8 +528,7 @@ Executes arithmetic operation with constant on **all** Array elements.
 Example Code:
 
 ```c++
-std::vector<int> V = {6, 9, 1, 0, 3};
-Array<int> A(V);
+Array<int> A({6, 9, 1, 0, 3});
 (A + 2).show(); // Will print: [8, 11, 3, 2, 5]
 (A - 2).show(); // Will print: [4, 7, -1, -2, 1]
 (A * 2).show(); // Will print: [12, 18, 2, 0, 6]
@@ -606,10 +541,8 @@ Array<int> A(V);
 `v.0.1+`
 
 ```c++
-std::vector<int> V = {6, 9, 1, 0, 3};
-std::vector<int> V2 = {5, 2, 8, 9, 7, 2};
-Array<int> A(V);
-Array<int> B(V2);
+Array<int> A({6, 9, 1, 0, 3});
+Array<int> B({5, 2, 8, 9, 7, 2});
 (A + B).show(); // Will print: [11, 11, 9, 9, 10, 2]
 (A - B).show(); // Will print: [1, 7, -7, -9, -4, -2]
 (A * B).show(); // Will print: [30, 18, 9, 0, 21, 0]
@@ -624,8 +557,7 @@ Array<int> B(V2);
 `v.0.1+`
 
 ```c++
-std::vector<int> V = {6, 9, 1, 0, 3};
-Array<int> A(V);
+Array<int> A({6, 9, 1, 0, 3});
 A += 2; // A = [8, 11, 3, 2, 5]
 A -= 2; // A = [4, 7, -1, -2, 1]
 A *= 2; // A = [12, 18, 2, 0, 6]
@@ -638,10 +570,8 @@ A %= 2; // A = [0, 1, 1, 0, 1]
 `v.0.1+`
 
 ```c++
-std::vector<int> V = {6, 9, 1, 0, 3};
-std::vector<int> V2 = {5, 2, 8, 9, 7, 2};
-Array<int> A(V);
-Array<int> B(V2);
+Array<int> A({6, 9, 1, 0, 3});
+Array<int> B({5, 2, 8, 9, 7, 2});
 A += B; // A = [11, 11, 9, 9, 10, 2]
 A -= B; // A = [1, 7, -7, -9, -4, -2]
 A *= B; // A = [30, 18, 9, 0, 21, 0]
@@ -676,10 +606,8 @@ Array<T>::masked(const ArrayMask &Mask);
 Example:  
 
 ```c++
-std::vector<int> V = {6, 9, 1, 0, 3};
-std::vector<bool> VM = {1, 0, 1, 0, 1};
-Array<int> A(V);
-Array<bool> Mask(VM);
+Array<int> A({6, 9, 1, 0, 3});
+Array<bool> Mask({1, 0, 1, 0, 1});
 A.masked(Mask).show(); // Will print [6, 1, 3]
 ```
 
@@ -705,8 +633,7 @@ bool custom_function (int Elem) {
     if (Elem > 5) return true;
     return false;
 }
-std::vector<int> V = {6, 9, 1, 0, 3};
-Array<int> A(V);
+Array<int> A({6, 9, 1, 0, 3});
 A.masked(custom_function).show(); // Will print [6, 9, 0]
 ```
 
@@ -717,8 +644,7 @@ A.masked(custom_function).show(); // Will print [6, 9, 0]
 `v.0.1+`
 
 ```c++
-std::vector<int> V = {6, 9, 1, 0, 3};
-Array<int> A(V);
+Array<int> A({6, 9, 1, 0, 3});
 ArrayMask Mask;
 Mask = (A == 3); // Mask = [0, 0, 0, 0, 1]
 Mask = (A != 3); // Mask = [1, 1, 1, 1, 0]
@@ -733,10 +659,8 @@ Mask = (A < 3); // Mask = [0, 0, 1, 1, 0]
 `v.0.1+`
 
 ```c++
-std::vector<int> V = {6, 9, 1, 0, 3};
-std::vector<int> V2 = {5, 2, 8, 9, 7, 2};
-Array<int> A(V);
-Array<int> B(V2);
+Array<int> A({6, 9, 1, 0, 3});
+Array<int> B({5, 2, 8, 9, 7, 2});
 ArrayMask Mask;
 Mask = (A == B); // Mask = [0, 0, 0, 0, 0, 0]
 Mask = (A != B); // Mask = [1, 1, 1, 1, 1, 1]
@@ -751,10 +675,8 @@ Mask = (A < B); // Mask = [0, 0, 1, 1, 1, 1]
 `v.0.1+`
 
 ```c++
-std::vector<bool> VM = {0, 0, 1, 1};
-std::vector<bool> VM2 = {0, 1, 0, 1, 1};
-ArrayMask Mask1(VM);
-ArrayMask Mask2(VM2);
+ArrayMask Mask1({0, 0, 1, 1});
+ArrayMask Mask2({0, 1, 0, 1, 1});
 ArrayMask Mask3;
 Mask3 = !Mask1;         // Mask3 = [1, 1, 0, 0]
 Mask3 = Mask1 | Mask2;  // Mask3 = [0, 1, 1, 1, 1]
@@ -767,8 +689,7 @@ Mask3 = Mask1 ^ Mask2;  // Mask3 = [0, 1, 1, 0, 1]
 `v.0.1+`
 
 ```c++
-std::vector<bool> VM = {0, 0, 1, 1};
-ArrayMask Mask1(VM);
+ArrayMask Mask1({0, 0, 1, 1});
 ArrayMask Mask2;
 Mask2 = Mask1 | 1;  // Mask2 = [1, 1, 1, 1]
 Mask2 = Mask1 & 0;  // Mask2 = [0, 0, 0, 0]
@@ -780,10 +701,8 @@ Mask2 = Mask1 ^ 1;  // Mask2 = [1, 1, 0, 0]
 `v.0.1+`
 
 ```c++
-std::vector<bool> VM = {0, 0, 1, 1};
-std::vector<bool> VM2 = {0, 1, 0, 1, 1};
-ArrayMask Mask1(VM);
-ArrayMask Mask2(VM2);
+ArrayMask Mask1({0, 0, 1, 1});
+ArrayMask Mask2({0, 1, 0, 1, 1});
 Mask2 |= Mask1; // Mask2 = [0, 1, 1, 1, 1]
 Mask2 &= Mask1; // Mask2 = [0, 0, 1, 1, 0]
 Mask2 ^= Mask1; // Mask2 = [0, 0, 0, 0, 0]
@@ -844,9 +763,7 @@ Two Arrays can be used as keys and values to create a map.
 Examples:
 
 ```c++
-std::vector<int> Init = {1, 2, 3, 4};
-std::vector<int> Init2 = {'A', 'B', 'C', 'D'};
-Array<int> A(Init);
+Array<int> A({1, 2, 3, 4};);
 // Conversion to STL List
 std::list<int> = Converter::toList(A);
 // Conversion to STL Set
@@ -857,7 +774,7 @@ int* DynArr;
 int DynArr_size;
 // Conversion to dynamic Array
 DynArr = Converter::toDynArray(A, DynArr_size);
-Array<int> Keys(Init2);
+Array<int> Keys({'A', 'B', 'C', 'D'});
 // Conversion to STL Map: {A: 1, B: 2, C: 3, D: 4}
 std::map<char, int> = Converter::toMap(Keys, A);
 ```
@@ -874,8 +791,7 @@ Array<char> Converter::toCharArray(const std::string &STD_String)
 Example:
 
 ```c++
-std::vector<int> Init = {'A', 'B', 'C', 'D'};
-Array<int> A(Init);
+Array<int> A({'A', 'B', 'C', 'D'});
 std::string conv_string = Converter::toString(A);
 std::cout<<conv_string<<std::endl; // Will print ABCD
 Converter::toCharArray(conv_string).show(true); // Will print `Array` [A, B, C, D]
@@ -894,8 +810,7 @@ void Files::saveArray(const Array<T> &Arr, const std::string &FileName)
 Example:
 
 ```c++
-std::vector<int> Init = {1, 2, 3, 4};
-Array<int> A(Init);
+Array<int> A({1, 2, 3, 4});
 Files::saveArray(A, "A.txt");   // File will contain 1 2 3 4
 ```
 
@@ -926,17 +841,22 @@ void Files::appendArray(const Array<T> &Arr, const std::string &FileName)
 Example:
 
 ```c++
-std::vector<int> Init = {1, 2, 3, 4};
-Array<int> A(Init);
+Array<int> A({1, 2, 3, 4});
 Files::saveArray(A, "A.txt");   // File will contain 1 2 3 4
 Files::appendArray(A, "A.txt"); // File will contain 1 2 3 4 1 2 3 4
 ```
 
 ## 6. Changelog
 
+### Release-0.7
+
+Added new constructor using initializer list.  
+`append()`, `insert()`, `contains()`, `find()` and `findAll()` support now initializer list.  
+Added `argmax()`, `argmin()` and `unique()`.
+
 ### Release-0.6
 
-Added `findAll()` for values and sub-arrays.
+Added `findAll()` for values and sub-arrays.  
 Added [Files namespace](#5-files-namespace) containing operation on Files with Arrays.
 
 ### Release-0.5

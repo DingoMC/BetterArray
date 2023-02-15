@@ -24,8 +24,10 @@
 #define ArrayEnd 2147483647         // Max index available
 using namespace std;
 template <class T> class Array;     // Main Array Class
+template <class T> class NDArray;   // Main N-Dimensional Array Class
 typedef Array<bool> ArrayMask;      // ArrayMask as Array<bool>
 enum Order {ASC = 1, DESC = -1};    // Sorting Order
+enum Direction {TOP = 0, BOTTOM = 1, RIGHT = 2, LEFT = 3}; // Expansion Direction
 /**
  * @brief Container namespace for printing functions
  */
@@ -147,7 +149,7 @@ class Array {
          * 
          * @param s Size of new array
          */
-        Array (unsigned s) {
+        explicit Array (unsigned s) {
             this->S = s;
             this->A.resize(this->S);
         }
@@ -156,7 +158,7 @@ class Array {
          * 
          * @param STL_Vector Initializing Vector
          */
-        Array (const vector < T > &STL_Vector) {
+        explicit Array (const vector < T > &STL_Vector) {
             this->S = STL_Vector.size();
             this->A.resize(this->S);
             for (unsigned i = 0; i < this->S; i++) this->A[i] = STL_Vector[i];
@@ -166,7 +168,7 @@ class Array {
          * 
          * @param STL_List Initializing List
          */
-        Array (const list < T > &STL_List) {
+        explicit Array (const list < T > &STL_List) {
             this->S = STL_List.size();
             for (auto it = STL_List.cbegin(); it != STL_List.cend(); it++) this->A.push_back(*it);
         }
@@ -186,9 +188,22 @@ class Array {
          * 
          * @param STL_Set Initializing Set
          */
-        Array (const set < T > &STL_Set) {
+        explicit Array (const set < T > &STL_Set) {
             this->S = STL_Set.size();
             for (auto it = STL_Set.cbegin(); it != STL_Set.cend(); it++) this->A.push_back(*it);
+        }
+        /**
+         * @brief Construct a new Array object using Initializer List
+         * 
+         * @param InitValues Initial values
+         */
+        explicit Array (initializer_list<T> InitValues) {
+            this->S = 0;
+            this->A.resize(this->S);
+            for (auto it = InitValues.begin(); it != InitValues.end(); ++it) {
+                this->S++;
+                this->A.push_back(*it);
+            }
         }
         // FUNCTIONS
         /**
@@ -223,6 +238,17 @@ class Array {
             }
         }
         /**
+         * @brief Add values to the end of an Array
+         * 
+         * @param Values Initializer list
+         */
+        void append (initializer_list<T> Values) {
+            for (auto it = Values.begin(); it != Values.end(); ++it) {
+                this->S++;
+                this->A.push_back(*it);
+            }
+        }
+        /**
          * @brief Remove last element from an Array
          */
         void pop () {
@@ -249,6 +275,14 @@ class Array {
             for (int i = 0; i < arr.size(); i++) {
                 this->S++;
                 this->A.insert(this->A.begin() + Idx(Where) + i, arr[i]);
+            }
+        }
+        void insert (int Where, initializer_list<T> Values) {
+            int i = 0;
+            for (auto it = Values.begin(); it != Values.end(); ++it) {
+                this->S++;
+                this->A.insert(this->A.begin() + Idx(Where) + i, *it);
+                i++;
             }
         }
         /**
@@ -334,6 +368,34 @@ class Array {
             T M = this->A[Idx(From)];
             for (unsigned i = Idx(From) + 1; i <= Idx(To); i++) if (this->A[i] < M) M = this->A[i];
             return M;
+        }
+        /**
+         * @brief Get indices of maximum values in Array
+         * @param From Starting Index (Inclusive). Default to 0
+         * @param To End Index (Inclusive). Default to Array End
+         * @return Array<int> Maximum indices Array
+         */
+        Array<int> argmax (int From = ArrayBegin, int To = ArrayEnd) {
+            if (To == ArrayEnd && (int) this->S < ArrayEnd) To = this->S - 1;
+            CheckRange(From, To);
+            T M = this->max(From, To);
+            Array<int> X;
+            for (unsigned i = Idx(From); i <= Idx(To); i++) if (this->A[i] == M) X.append(i);
+            return X;
+        }
+        /**
+         * @brief Get indices of minimum values in Array
+         * @param From Starting Index (Inclusive). Default to 0
+         * @param To End Index (Inclusive). Default to Array End
+         * @return Array<int> Minimum indices Array
+         */
+        Array<int> argmin (int From = ArrayBegin, int To = ArrayEnd) {
+            if (To == ArrayEnd && (int) this->S < ArrayEnd) To = this->S - 1;
+            CheckRange(From, To);
+            T M = this->min(From, To);
+            Array<int> X;
+            for (unsigned i = Idx(From); i <= Idx(To); i++) if (this->A[i] == M) X.append(i);
+            return X;
         }
         /**
          * @brief Get average of Array
@@ -447,7 +509,25 @@ class Array {
          * @return false - Sub-Array not found
          */
         bool contains (const Array <T> &SubArray) {
-            if (this->S < SubArray.S);
+            if (this->S < SubArray.S) return false;
+            int current_search = 0;
+            for (unsigned i = 0; i < this->S; i++) {
+                if (this->A[i] == SubArray[current_search]) current_search++;
+                else current_search = 0;
+                if (current_search == SubArray.S) return true;
+            }
+            return false;
+        }
+        /**
+         * @brief Check if Array contains values in order
+         * 
+         * @param Values Values to be searched for
+         * @return true
+         * @return false 
+         */
+        bool contains (initializer_list<T> Values) {
+            if (this->S < Values.size()) return false;
+            Array<T> SubArray(Values);
             int current_search = 0;
             for (unsigned i = 0; i < this->S; i++) {
                 if (this->A[i] == SubArray[current_search]) current_search++;
@@ -482,6 +562,23 @@ class Array {
             return ArrayEnd;
         }
         /**
+         * @brief Find array index of first values list occurance
+         * @param Values Values list to be searched for
+         * @return int - first found index, if not found it returns ArrayEnd = 2147483647
+         */
+        int find (initializer_list<T> Values) {
+            if (this->S < Values.size()) return false;
+            Array<T> SubArray(Values);
+            int current_search = 0, found_index = 0;
+            for (unsigned i = 0; i < this->S; i++) {
+                if (current_search == 0) found_index = i;
+                if (this->A[i] == SubArray[current_search]) current_search++;
+                else current_search = 0;
+                if (current_search == SubArray.S) return found_index;
+            }
+            return ArrayEnd;
+        }
+        /**
          * @brief Find all array indices where value occurs
          * @param Val Value to be searched for
          * @return Array<int> Array of indices
@@ -497,8 +594,8 @@ class Array {
          * @return Array<int> Array of indices
          */
         Array<int> findAll (const Array <T> &SubArray) {
-            if (this->S < SubArray.S);
             Array<int> X;
+            if (this->S < SubArray.S) return X;
             int current_search = 0, iter_index = 0;
             for (unsigned i = 0; i < this->S; i++) {
                 if (current_search == 0) iter_index = i;
@@ -508,6 +605,38 @@ class Array {
                     X.append(iter_index);
                     current_search = 0;
                 }
+            }
+            return X;
+        }
+        /**
+         * @brief Find all array indices where value list begins
+         * @param Values Value list to be searched for
+         * @return Array<int> Array of indices
+         */
+        Array<int> findAll (initializer_list<T> Values) {
+            Array<int> X;
+            if (this->S < Values.size()) return X;
+            Array<T> SubArray(Values);
+            int current_search = 0, iter_index = 0;
+            for (unsigned i = 0; i < this->S; i++) {
+                if (current_search == 0) iter_index = i;
+                if (this->A[i] == SubArray[current_search]) current_search++;
+                else current_search = 0;
+                if (current_search == SubArray.S) {
+                    X.append(iter_index);
+                    current_search = 0;
+                }
+            }
+            return X;
+        }
+        /**
+         * @brief Return Array with removed duplicates
+         * @return Array<T> 
+         */
+        Array<T> unique () {
+            Array<T> X;
+            for (unsigned i = 0; i < this->S; i++) {
+                if (!X.contains(this->A[i])) X.append(this->A[i]);
             }
             return X;
         }
@@ -788,6 +917,11 @@ class Array {
             for (unsigned i = 0; i < Mask.S; i++) this->A[i] = (bool) A[i] ^ (bool) Mask.A[i];
             return ArrayMask(this->A);
         }
+};
+// Main N-Dimensional Array Class
+template <class T>
+class NDArray {
+
 };
 /**
  * @brief Converter namespace for Array conversions and more
