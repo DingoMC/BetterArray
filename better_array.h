@@ -2,12 +2,12 @@
  * @file better_array.h
  * @author DingoMC (www.dingomc.net)
  * @brief Better Arrays for C++. Manage array calculations in more modern and convenient way.
- * @version 0.6
- * @date 2022-11-28
+ * @version 0.8
+ * @date 2023-02-19
  * 
  * @copyright Copyright (c) DingoMC Systems 2022
- * @warning Library written and tested on C++11. Using older C++ Version may cause malfunction!
- * @note Full documentation https://github.com/DingoMC/BetterArray/README.md
+ * @warning Library written and tested on C++11. Using older C++ Versions may cause malfunction!
+ * @note Full documentation https://dingomc.net/documentation/better_array.html
  */
 #ifndef BETTER_ARRAY_H
 #define BETTER_ARRAY_H
@@ -24,7 +24,6 @@
 #define ArrayEnd 2147483647         // Max index available
 using namespace std;
 template <class T> class Array;     // Main Array Class
-template <class T> class NDArray;   // Main N-Dimensional Array Class
 typedef Array<bool> ArrayMask;      // ArrayMask as Array<bool>
 enum Order {ASC = 1, DESC = -1};    // Sorting Order
 enum Direction {TOP = 0, BOTTOM = 1, RIGHT = 2, LEFT = 3}; // Expansion Direction
@@ -918,11 +917,6 @@ class Array {
             return ArrayMask(this->A);
         }
 };
-// Main N-Dimensional Array Class
-template <class T>
-class NDArray {
-
-};
 /**
  * @brief Converter namespace for Array conversions and more
  */
@@ -999,7 +993,7 @@ namespace Converter {
      */
     string toString (const Array<char> &Char_Array) {
         string s = "";
-        for (unsigned i = 0; i < Char_Array.size(); i++) s += Char_Array[i];
+        for (int i = 0; i < Char_Array.size(); i++) s += Char_Array[i];
         return s;
     }
     /**
