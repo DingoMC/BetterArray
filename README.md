@@ -20,13 +20,14 @@ Any suggestions to improve this library can be sent via [E-mail](https://www.din
 Files: better_array.h, ndarray.h  
 Latest Version: [0.8](#release-08)  
 Created on: 11th Nov 2022  
-Latest Update: 19th Feb 2023  
+Latest Update: 06th Mar 2023  
 Testing Files: test.cpp, test_ndarray.cpp  
 G++ Additional Compiler Flags: `-static-libstdc++`, `-std=c++17`
 
 ## 2. Documentation
 
 Documentation for better_array.h can be found [here](https://www.dingomc.net/documentation/better_array.html)
+Documentation for ndarray.h can be found [here](https://www.dingomc.net/documentation/ndarray.html)
 
 ## 3. Changelog
 
